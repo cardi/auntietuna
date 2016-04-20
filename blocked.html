@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+<title></title>
+<link rel="stylesheet" href="reset.css" type="text/css">
+<style>
+  body {
+    font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+    font-size: 100%;
+  }
+
+  div#overlay {
+    font-family: Helvetica;
+    font-size: 18pt;
+    margin: auto;
+    padding-top: auto;
+    padding-bottom: auto;
+    color: #fff;
+    width: 100%;
+    height: 100%;
+    display: table;
+    top: 0; 
+    left: 0; 
+    z-index: 1000;
+    position: absolute; 
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+
+  div#warning {
+    padding: 3em !important; 
+    margin-top: 4em;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: 80% !important;
+    border: 1px solid black !important;
+    background-color: rgba(137,6,0,1) !important;
+  }
+
+  button#back {
+    background-color: rgba(230,10,0,1.0);
+  }
+  a#click_adv {
+    font-size:14px;
+    text-decoration: none !important;
+  }
+</style>
+</head>
+<body>
+  <div id="overlay">
+  <div id="warning">
+    <p><h3>Warning&mdash;Suspected phishing page!</h3></p>
+    <br>
+    <p>
+      This page may be a forgery designed to
+      trick you into sharing sensitive information.
+      Entering anything here may result in identity theft or other abuse.
+    </p>
+    <br>
+    <p>&rarr; What is phishing? Learn more: <a href="http://www.antiphishing.org">antiphishing.org</a></p>
+    <br>
+    <p>&rarr; We think you meant to go to: <a id="suggested" href="#">[empty]</a></p>
+    <br>
+    <button type="button" id="back" class="btn">Back to Safety</button>
+    <br><br><br>
+    <p>
+    <div style="font-size: 14px;">
+      <span id="arrow">&#9656;</span> <a href="#" id="click_adv">Advanced</a>
+    </div>
+    <br>
+    <div id="text_adv" style="font-size: 14px;"></div>
+    </p>
+  </div>
+  </div>
+  <script src="util.js"></script>
+  <script src="blocked.js"></script>
+</body>
+</html>

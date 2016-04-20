@@ -1,37 +1,48 @@
 {
   "manifest_version": 2,
-
-  "name": "hashing chrome plugin",
-  "version": "0.0.1",
-
-  "description": "chunks and hashes webpages and checks if it's phish or not",
+  "name":        "AuntieTuna"
+  "version":     "0.0.2",
+  "description": "chunks and hashes webpages to checks for phish",
 
   "background": {
     "scripts": ["background.js"]
   },
 
+  "browser_action": {
+    "default_icon":  "shield.png",
+    "default_popup": "popup.html",
+    "default_title": "phish blocker"
+  },
+
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["contentscript-start.js"],
-      "run_at": "document_start",
+      "matches":  ["http://*/*", "https://*/*"],
+      "js":       ["contentscript-start.js"],
+      "run_at":    "document_start",
       "all_frames": true
     },
     {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["sha256.js", "contentscript-end.js"],
-      "run_at": "document_end",
+      "matches":  ["http://*/*", "https://*/*"],
+      "js":       ["util.js", "sha256.js", "FileSaver.min.js", "contentscript-end.js" ],
+      "run_at":    "document_end",
       "all_frames": true
     }
   ],
 
-  "web_accessible_resources": [
-    "hashes.paypal"
-  ],
+  "options_ui": {
+    "page":        "options.html",
+    "chrome_style": true
+  },
 
   "permissions": [
-    "tabs",
+    "activeTab",
+    "pageCapture",
     "storage",
+    "tabs",
     "unlimitedStorage"
+  ],
+
+  "web_accessible_resources": [
+    "hashes.paypal-2015-11-16.json"
   ]
 }

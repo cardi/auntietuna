@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+<title></title>
+<style>
+  body {
+    font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+    font-size: 100%;
+  }
+  #status {
+    /* avoid an excessively wide status text */
+    white-space: pre;
+    white-space: normal;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 160px;
+    max-width: 400px;
+    padding: 0 5px;
+  }
+  h3 {
+    background-color: #ddd;
+    border: 0
+    color: #000;
+    font-size: 14px;
+    text-align: center;
+    padding: 5px 0;
+    margin: 1em 0 1em 0;
+  }
+
+  .btn {
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 14px;
+    background: #4CAF50;
+    padding: 10px 20px 10px 20px;
+    margin: 0 auto 5px auto;
+    text-decoration: none;
+    width: 150px;
+    border: 0;
+    -webkit-border-radius: 8;
+    -moz-border-radius: 8;
+    border-radius: 8px;
+  }
+
+  .btn-debug {
+    background: #607D8B;
+  }
+  
+  .btn:hover {
+    background: #666;
+    border: 0;
+    text-decoration: none;
+  }
+
+  .btn-debug:hover {
+    background: #666;
+  }
+
+  button:focus {outline:0 !important;}
+</style>
+</head>
+<body>
+  <div style="text-align: center; padding-top: 0.75em;">
+    <button class="btn" id="add">add to good list</button>
+    <button class="btn btn-debug" id="dl">[debug] dl hashes</button>
+  </div>
+
+  <h3>messages</h3>
+  <div id="status"></div>
+  <img id="image-result" hidden>
+  <script src="FileSaver.min.js"></script>
+  <script src="util.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

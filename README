@@ -1,24 +1,44 @@
-Installation (Google Chrome, OS X):
-===================================
+AuntieTuna
+==========
 
-1. Go to Extensions (Window -> Extensions) or enter URL "chrome://extensions/"
+AuntieTuna is a Chrome Extension that checks if each visited page is
+a potential phishing website based on snapshots of known good websites
+that a user adds.
 
+For example, a user adds a snapshot of Bank of FooBar. The extension
+then checks every other page the user visits to see if it looks like
+Bank of FooBar--if it does, it's likely phish and blocked.
+
+The latest version can be found at https://ant.isi.edu/software/antiphish.
+
+Copyright and license can be found in the files COPYRIGHT and LICENSE.
+
+Please send email to calvin@isi.edu with questions, bugs, feature
+requests, patches, and any notes on your usage.
+
+Installation
+============
+
+1. Go to Extensions (Window -> Extensions) or "chrome://extensions"
 2. Click on "Load unpacked extensions..."
-
 3. Select the directory containing this extension and click on "Select"
-
-4. Make sure "Collect errors" is checked
-
-5. To view debugging information for the extension on a visited webpage, 
+4. To view debugging information for the extension on a visited webpage, 
    go to View -> Developer -> JavaScript Console
 
-Installation (Google Chrome, GNU/Linux):
-===================================
+Instructions
+============
 
-xxx
+On a website you normally log in to, click on the shield icon and 
+"Add to Good List".
 
-Installation (Google Chrome, Windows):
-===================================
+The extension now checks, behind the scenes, if every visited webpage is
+phish or not. If it is, you'll be prevented from clicking through.
 
-xxx
+NOTE: Software is in ALPHA stage! There *might* be false positives and/or
+broken websites. Please send feedback to calvin@isi.edu.
 
+Libraries Used
+==============
+- FileSaver   : https://github.com/eligrey/FileSaver.js
+- CryptoJS    : http://code.google.com/p/crypto-js
+- shield icon : http://firstsiteguide.com/free-icon-set/

@@ -1,6 +1,8 @@
-console.log("pb contentscript-start> begin");
+console.log("pb cs-start > begin");
 
-// TODO load whitelist from a resource
+var chrome = self.chrome;
+var storage = chrome.storage.local;
+
 // XXX whitelisting needs to be done carefully
 //
 // checking for the existence of "paypal.com" inside the URL is _not_
@@ -17,30 +19,61 @@ console.log("pb contentscript-start> begin");
 // https://code.google.com/p/chromium/issues/detail?id=107793
 
 var shouldRun = 1;
-var whitelisted_urls = ['https://www.paypal.com/', 'https://www.isi.edu/'];
+var shouldCrawl = 0;
+var whitelisted_domains = [];
 
-// check if `location.href` exists in whitelist
-// (note that if debug == 1 in contentscript-end.js, hash checking will still run)
-// TODO optimize
-whitelisted_urls.forEach(function(url) {
+// XXX possible race condition if our storage.get takes too long
+storage.get('whitelist', function(items) {
+  whitelisted_domains = items['whitelist'];
+  console.debug("pb whitelist > " + whitelisted_domains);
 
-  // 
-  // check if a whitelisted URL is at the *beginning* of `location.href`
+  // have to put this in the callback because storage.get async  
+  // document.domain, window.location.host, window.location.hostname
   //
-  //   good: http://www.paypal.com/
-  //   bad:  http://www.paypal.com.bad.website.that.uses.subdomains.com/login
+  // TODO subdomains vs. domains: www.paypal.com vs. paypal.com
   //
-  // XXX are there any other href trickeries that could be done?
+  if(whitelisted_domains.indexOf(document.domain) != -1) {
+    console.log("pb cs-start > domain in whitelist => *not* running checks");
+    shouldRun = 0; 
 
-  // e.g. "https://www.paypal.com/home" indexOf ( "https://www.paypal.com/" )
-  // should only be 0 in order to match the whitelist
-  // TODO extract the base domain using some Chrome API
-  if(location.href.indexOf(url) === 0) {
-    shouldRun = 0;
+    // opportunistic recrawl
+    // check when and compare to the last crawl time
+    // then set a variable and recrawl (in contentscript-end after document_ready)
+    chrome.runtime.sendMessage(
+      {action: "check_and_recrawl", domain: document.domain}, 
+      function(response) {
+        if (chrome.runtime.lastError) {
+          console.log("pb cs-start recrawl > error in request: " + chrome.runtime.lastError.message);
+        }
+        if (response.msg === null) {
+          console.log("pb cs-start recrawl > response.msg is null, continuing...");
+        }
+
+        var today = new Date(Date.now());
+        var last_crawled = new Date(response.msg);
+        var diff = Math.abs(today - last_crawled); // results in ms
+
+        console.debug("pb cs-start response > " + response.msg + " diff: " + diff);
+
+        // 12096e5 == 14 days
+        if ( diff > 12096e5 ) {
+          shouldCrawl = 1;
+        }
+      });
+  } else {
+    console.log("pb cs-start > domain *not* in whitelist => running checks");
+    shouldRun = 1;
   }
 
+  // debugging information
+  console.debug(
+    ("pb cs-start > "
+      + "timestamp: " + Date.now()
+      + ", shouldRun: " + shouldRun
+      + ", shouldCrawl: " + shouldCrawl
+      + ", whitelist index: " + whitelisted_domains.indexOf(document.domain)
+      + ", website: " + location.href
+      + ", domain: " + document.domain));
 });
 
-console.log("pb contentscript-start> timestamp: " + Date.now() + ", shouldrun: " + shouldRun + ", whitelist index: " + whitelisted_urls.indexOf(location.href) + " website: " + location.href);
-
-console.log("pb contentscript-start> end");
+console.log("pb cs-start > end");
