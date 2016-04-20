@@ -1,0 +1,37 @@
+{
+  "manifest_version": 2,
+
+  "name": "hashing chrome plugin",
+  "version": "0.0.1",
+
+  "description": "chunks and hashes webpages and checks if it's phish or not",
+
+  "background": {
+    "scripts": ["background.js"]
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["contentscript-start.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["sha256.js", "contentscript-end.js"],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
+
+  "web_accessible_resources": [
+    "hashes.paypal"
+  ],
+
+  "permissions": [
+    "tabs",
+    "storage",
+    "unlimitedStorage"
+  ]
+}

@@ -1,0 +1,24 @@
+Installation (Google Chrome, OS X):
+===================================
+
+1. Go to Extensions (Window -> Extensions) or enter URL "chrome://extensions/"
+
+2. Click on "Load unpacked extensions..."
+
+3. Select the directory containing this extension and click on "Select"
+
+4. Make sure "Collect errors" is checked
+
+5. To view debugging information for the extension on a visited webpage, 
+   go to View -> Developer -> JavaScript Console
+
+Installation (Google Chrome, GNU/Linux):
+===================================
+
+xxx
+
+Installation (Google Chrome, Windows):
+===================================
+
+xxx
+

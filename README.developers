@@ -1,0 +1,40 @@
+have an onloadcompleted
+- fresh start, get hashes, then basically reinject javascript to run
+- essentially we could get the case where tabs have finished loading
+  (document_end) but our hashes haven't been populated yet.
+
+document_begin, document_end
+- document_begin 
+  - check if whitelisted (or ssl certs are good???)
+  - check if we have anything in local storage, if not, then exit out
+    - this will make sure the hashing algorithms don't run
+  - if we're "ready", then flip a bit
+
+- document_end
+  - check for flipped bit
+  - hash everything, compare, then if badness ratio > 0.X, throw up the alert page
+
+background:
+  background.js
+
+runs in the background (on first launch? always?)
+- check local storage for hashes
+- if empty (or outdated, but worry about that later), then populate them into memory
+  - once loaded into memory (set bit), we're ready to go
+    -> onloadcompleted
+
+
+"matches": ["http://*/*", "https://*/*"],
+
+---
+
+labeled datasets are enumerated in web_accessible_resources.
+- eventually need to move to a better labeled dataset management system
+- needs to be dated, and updated. paypal updates their homepage continuously,
+  so our labeled dataset needs to be updated, too. 
+
+--- 
+
+build a working set of whitelisted phish
+  - for individual users
+    - bank of america, paypal, wells fargo, usc login page, (gmail?)
