@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name":        "AuntieTuna"
+  "name":        "AuntieTuna",
   "version":     "0.0.2",
   "description": "chunks and hashes webpages to checks for phish",
 
