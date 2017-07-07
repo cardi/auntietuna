@@ -2,22 +2,42 @@
 <html>
 <head>
   <title>AuntieTuna Options</title>
-  <style>
-    body: { padding: 10px; }
-  </style>
+  <link href="options.css" type="text/css" rel="stylesheet">
 </head>
 
 <body>
+  <h2>AuntieTuna </h2>
+
+	<table id = "myTable" >
+		<tr class = "dark">
+		<th></th>
+		<th></th>
+		<th></th>
+		<th id = "date">Recent Hash</th>
+		<th id = "web" >Website</th>
+		<th id = "hash">Hash</th>
+		</tr>
+
+
+	</table>
+	<br>
+
+	<p> Press the <img  src = "checkmark.png" width="25px" height="25px"> icon is used to enable/disable a site.</p>
+	<p> Press the <img  src = "trash.png" width="25px" height="25px"> icon to remove site from known good list. </p>
+	<p> Press the <img  src = "reload.png" width="25px" height="25px"> icon to refresh hash. </p>
+
+  <br />
   <div id="status"></div>
   <hr />
   <p>
   <div id="storageUsed"></div>
   <!--button id="backup">Backup to file</button>
   <button id="load">Restore from file</button-->
+<br>
   </p>
 
-  <p>
-  Debug / Developers: <br />
+  <p> Debug / Developers:
+   <br /><br />
   <button id="reset">Reset all hashes...</button>
   <button id="loadDefault">Load initial set</button>
   </p>
