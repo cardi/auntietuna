@@ -27,7 +27,7 @@ h2 {
 table {
 	background-color: rgb(226, 226, 226) ;
 	margin-top: 20px;
-	width: 950px;
+	width: 980px;
 	border: 1px solid rgb(165, 165, 165);
 	margin-left: 20px;
 	font-family: 'Didact Go thic', sans-serif;
@@ -36,6 +36,28 @@ table {
 	text-align: center;
 	margin: 0px 20px;
 
+}
+
+.hidden {
+	display: none;
+}
+
+.getHash {
+	text-align: center;
+	width: 40px;
+	height: 25px;
+	padding: 0;
+	margin: 0;
+	border-color: white;
+}
+
+.download {
+	text-align: center;
+	width: 55px;
+	height: 25px;
+	padding: 0;
+	margin: 0;
+	border-color: white;
 }
 
 .dark {
@@ -85,13 +107,21 @@ table {
 }
 
 #hash {
-	width: 80px;
+	max-width: 60px;
+	overflow: hidden;
 	text-overflow: ellipsis;
+	white-space: nowrap;
+	border-collapse: collapse;
+	padding: 0;
+	margin: 0;
+	border-spacing: 0;
 }
 
 #date {
-	width: 110px;
+	width: 140px;
 }
+
+
 
 /*#reset, #loadDefault {
 	font-family: sans-serif;
