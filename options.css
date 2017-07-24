@@ -9,6 +9,7 @@
 p {
 	font-family: sans-serif;
 	margin-left: 20px;
+	font-size: 14px;
 }
 
 h2 {
@@ -35,6 +36,10 @@ table {
 	padding: 0;
 	text-align: center;
 	margin: 0px 20px;
+
+}
+.chooseDownload {
+
 
 }
 

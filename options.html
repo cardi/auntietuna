@@ -8,7 +8,8 @@
 <body>
   <h2>AuntieTuna </h2>
   <p>
-  <input type="file" id="import">
+    To import foreign hashes websites in .json formatiing, click button below to upload file.  <br />
+  <input type="file" id="import" >
   </p>
   <br />
 	<table id = "myTable" cellspacing= "0" >
@@ -16,6 +17,7 @@
 		<th></th>
 		<th></th>
 		<th></th>
+    <th id = "foreign">Imported</th>
 		<th id = "date">Recent Hash</th>
 		<th id = "web" >Website</th>
 		<th id = "hash">Hash</th>
@@ -23,11 +25,17 @@
 
 
 	</table>
+  <p>
+    <br/>
+    <button id= "all">Download All</button>
+    <button id ="selected">Download Selected</button>
+  </p>
+
 	<br>
 
-	<p> Press the <img  src = "checkmark.png" width="25px" height="25px"> icon is used to enable/disable a site.</p>
+	<p> Press the <img  src = "checkmark.png" width="25px" height="25px"> icon is used to enable/disable a site. (in progress...)</p>
 	<p> Press the <img  src = "trash.png" width="25px" height="25px"> icon to remove site from known good list. </p>
-	<p> Press the <img  src = "reload.png" width="25px" height="25px"> icon to refresh hash. </p>
+	<p> Press the <img  src = "reload.png" width="25px" height="25px"> icon to refresh hash. (Let the opened window to load fully for this to work.)</p>
 
   <br />
   <div id="status"></div>

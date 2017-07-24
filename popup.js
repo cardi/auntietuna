@@ -20,7 +20,7 @@ function sendBgMessage(message) {
     {
       action: 'log',
       msg: message
-    }, 
+    },
     function(response) { }
   );//*/
 }
@@ -37,7 +37,7 @@ function downloadHashes(addToStorage) {
 
   // get the current tab ID to send the right message to
   getCurrentTab(function(tab) {
-    sendBgMessage("from: " + tab.id + " url: " + tab.url); 
+    sendBgMessage("from: " + tab.id + " url: " + tab.url);
     console.log('current tab id is ' + tab.id);
     chrome.tabs.sendMessage(
       tab.id,
@@ -47,26 +47,28 @@ function downloadHashes(addToStorage) {
 
     // send request for the DOM
     chrome.tabs.sendMessage(
-      tab.id, 
+      tab.id,
       { action: 'request_dom' },
-      function(response) { 
+      function(response) {
         console.log('response> ' + response);
         if(response.lastError) {
           console.log('error> ' + response.lastError);
         } else {
           // we're successful and we have the hashes
-          console.log('msg> ' + response.msg); 
+          console.log('msg> ' + response.msg);
 
           var data = {
             domain: response.domain,
             last_updated: (new Date(response.last_updated)).toJSON(),
-            hashes: response.hashes 
+            hashes: response.hashes
           }
           console.log(data);
+          //changed so that it can work when importing many sites
+          var arrayData = "[" + JSON.stringify(data) + "]";
 
-          var blob = new Blob([JSON.stringify(data)],
+          var blob = new Blob([arrayData],
                               {type: "application/json;charset=utf-8"});
-          
+
           if(addToStorage == false) {
             // now package it up and download it to a file
             var fn_results = "hashes." + data.domain + "." + data.last_updated + ".json";
@@ -74,17 +76,17 @@ function downloadHashes(addToStorage) {
             // FileSaver saveAs(Blob data, DOMString filename, optional Boolean disableAutoBOM)
             saveAs(blob, fn_results, true); // don't want BOM (byte order mark)
             renderStatus("hashes downloaded.");
-          } 
+          }
           else if(addToStorage == true) {
             // we want to add this to our indexedDB
 
             // provide the option to have it downloaded, if needed:
             var url = window.URL.createObjectURL(blob);
-            //sendBgMessage("blob url: " + url); 
+            //sendBgMessage("blob url: " + url);
 
             // test that we can download text
             var a = document.createElement("a");
-            var b = document.createTextNode("Download"); 
+            var b = document.createTextNode("Download");
             a.appendChild(b);
             document.body.appendChild(a);
             a.href = url;
@@ -124,3 +126,5 @@ document.getElementById('add').addEventListener('click', function() { downloadHa
 // user clicks on "download" button
 // this downloads a plaintext copy of hashes of all chunks of the active page
 document.getElementById('dl').addEventListener('click', function() { downloadHashes(false); });
+
+document.getElementById('options').addEventListener('click', function(){window.open("options.html");});

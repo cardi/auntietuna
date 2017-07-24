@@ -7,6 +7,9 @@
     font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
     font-size: 100%;
   }
+  *{
+    margin: 0;
+  }
   #status {
     /* avoid an excessively wide status text */
     white-space: pre;
@@ -17,6 +20,19 @@
     max-width: 400px;
     padding: 0 5px;
   }
+
+#top {
+	height: 35px;
+	width: 100%;
+	border-radius: 0px;
+	font-size: 20px;
+	text-align: center;
+	background-color: rgb(12, 15, 13);
+	border-color: rgb(12, 15, 13);
+  color: white;
+  padding-top: 3px;
+}
+
   h3 {
     background-color: #ddd;
     border: 0
@@ -68,6 +84,7 @@
 </style>
 </head>
 <body>
+  <p id= "top">AuntieTuna</p>
   <div style="text-align: center; padding-top: 0.75em;">
     <button class="btn" id="add">add to good list</button>
     <button class="btn btn-debug" id="dl">[debug] dl hashes</button>
