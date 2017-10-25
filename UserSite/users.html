@@ -1,0 +1,63 @@
+<!-- users.html -->
+<!doctype html>
+<html>
+<head>
+  <title>Users</title>
+  <link href="users.css" type="text/css" rel="stylesheet">
+  <meta name="google-signin-client_id" content="337093580802-jd54ds0va0a9sk47l8oemhrkq96qb4fe.apps.googleusercontent.com">
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+
+
+</head>
+
+<body>
+  <h2>AuntieTuna </h2>
+
+  <div class="g-signin2" data-onsuccess="onSignIn"></div>
+  <button id = "signout" href="#">Sign out</button>
+  <br>
+  <p>
+    To import foreign hashes websites in .json formatiing, click button below to upload file.  <br />
+  <input type="file" id="import" >
+  </p>
+  <br />
+  <table id = "myTable" cellspacing= "0" >
+    <tr class = "dark">
+    <th></th>
+    <th></th>
+    <th></th>
+    <th id = "actions">Actions</th>
+    <th id = "foreign">User</th>
+    <th id = "date">Recent Hash</th>
+    <th id = "web" >Website</th>
+    <th id = "hash">Hash</th>
+    </tr>
+
+
+  </table>
+  <p>
+    <br/>
+    <button id= "all">Download All</button>
+    <button id ="selected">Download Selected</button>
+  </p>
+
+  <br>
+
+
+
+  <br />
+  <div id="status"></div>
+  <hr />
+  <p>
+  <div id="storageUsed"></div>
+  <!--button id="backup">Backup to file</button>
+  <button id="load">Restore from file</button-->
+  <script src = "client.js"></script>
+  <br>
+  </p>
+
+
+</body>
+</html>
