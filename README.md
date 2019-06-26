@@ -1,18 +1,25 @@
 # AuntieTuna
 
-AuntieTuna is a Chrome Extension that checks if each visited page is
-a potential phishing website based on snapshots of known good websites
+AuntieTuna is a browser extension that checks if each visited page is a
+potential phishing website based on snapshots of known good websites
 that a user adds.
 
 For example, a user adds a snapshot of Bank of FooBar. The extension
 then checks every other page the user visits to see if it looks like
-Bank of FooBar--if it does, it's likely phish and blocked.
+Bank of FooBar–if it does, it's likely phish and blocked.
 
-The latest version can be found at https://ant.isi.edu/software/antiphish.
+A paper describing the details and usability of AuntieTuna can be found
+online:
+> Calvin Ardi and John Heidemann 2016. **AuntieTuna: Personalized
+> Content-Based Phishing Detection**. *Proceedings of the NDSS Workshop
+> on Usable Security* (San Diego, California, USA, Feb. 2016).
+> ([BibTeX](https://ant.isi.edu/bib/Ardi16a.html),
+> [PDF](http://www.isi.edu/%7ejohnh/PAPERS/Ardi16a.pdf))
 
-Copyright and license can be found in the files COPYRIGHT and LICENSE.
+Additional information and a copy of this software its source code can
+also be found at <https://ant.isi.edu/software/antiphish>.
 
-Please send email to calvin@isi.edu with questions, bugs, feature
+Please send email to <calvin@isi.edu> with questions, bugs, feature
 requests, patches, and any notes on your usage.
 
 ## installation
@@ -32,7 +39,7 @@ The extension now checks, behind the scenes, if every visited webpage is
 phish or not. If it is, you'll be prevented from clicking through.
 
 NOTE: Software is in ALPHA stage! There *might* be false positives and/or
-broken websites. Please send feedback to calvin@isi.edu.
+broken websites. Please send feedback to <calvin@isi.edu>.
 
 ## libraries used
 
