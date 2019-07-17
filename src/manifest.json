@@ -5,7 +5,8 @@
   "description"      : "chunks and hashes webpages to checks for phish",
 
   "background": {
-    "scripts": ["js/background.js"]
+    "scripts": ["lib/dexie.js"
+              , "js/background.js"]
   },
 
   "browser_action": {
