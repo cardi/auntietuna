@@ -1,37 +1,34 @@
 {
-  "manifest_version": 2,
-  "name":        "AuntieTuna",
-  "version":     "0.0.3",
-  "description": "chunks and hashes webpages to checks for phish",
+  "manifest_version" : 2,
+  "name"             : "AuntieTuna",
+  "version"          : "0.0.3",
+  "description"      : "chunks and hashes webpages to checks for phish",
 
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["js/background.js"]
   },
 
   "browser_action": {
-    "default_icon":  "shield.png",
-    "default_popup": "popup.html",
-    "default_title": "phish blocker"
+    "default_icon"  : "img/shield.png",
+    "default_popup" : "popup.html",
+    "default_title" : "AuntieTuna"
   },
 
   "content_scripts": [
     {
-      "matches":  ["http://*/*", "https://*/*"],
-      "js":       ["contentscript-start.js"],
-      "run_at":    "document_start",
-      "all_frames": true
-    },
-    {
-      "matches":  ["http://*/*", "https://*/*"],
-      "js":       ["util.js", "sha256.js", "FileSaver.min.js", "contentscript-end.js" ],
-      "run_at":    "document_end",
-      "all_frames": true
+      "matches"    : ["http://*/*", "https://*/*"],
+      "js"         : ["lib/sha256.min.js"
+                    , "lib/FileSaver.min.js"
+                    , "js/util.js"
+                    , "js/contentscript.js"],
+      "run_at"     : "document_end",
+      "all_frames" : true
     }
   ],
 
   "options_ui": {
-    "page":        "options.html",
-    "chrome_style": false
+    "page"         : "options.html",
+    "chrome_style" : false
   },
 
   "permissions": [
@@ -43,6 +40,7 @@
   ],
 
   "web_accessible_resources": [
-    "hashes.paypal-2015-11-16.json"
+    "web_accessible_resources/hashes.paypal-2015-11-16.json"
   ]
+
 }
