@@ -26,17 +26,19 @@
     }
   ],
 
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';",
+
   "options_ui": {
     "page"         : "options.html",
     "chrome_style" : false
   },
 
   "permissions": [
-    "activeTab",
-    "pageCapture",
-    "storage",
-    "tabs",
-    "unlimitedStorage"
+    "activeTab"
+  , "storage"
+  , "tabs"
+  , "unlimitedStorage"
+  , "<all_urls>"
   ],
 
   "web_accessible_resources": [
