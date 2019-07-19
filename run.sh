@@ -14,6 +14,7 @@ FIREFOX_BIN="$HOME/Applications/Firefox Developer Edition.app/Contents/MacOS/fir
  OPTS+=(--verbose)                                         # verbose output for web-ext
 #OPTS+=(--keep-profile-changes)                            # persist profile across runs
  OPTS+=(--pref devtools.webconsole.timestampMessages=true) # timestamp messages in console
+ OPTS+=(--start-url about:debugging#/runtime/this-firefox) # open debugging tab
 
 web-ext run \
   --source-dir="$PWD/src" \
