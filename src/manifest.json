@@ -6,6 +6,7 @@
 
   "background": {
     "scripts": ["lib/dexie.js"
+              , "js/util.js"
               , "js/background.js"]
   },
 
@@ -44,6 +45,8 @@
 
   "web_accessible_resources": [
     "web_accessible_resources/hashes.paypal-2015-11-16.json"
+   ,"web_accessible_resources/hashes.nop.json"
+   ,"web_accessible_resources/hashes.ignore-me.txt"
   ]
 
 }

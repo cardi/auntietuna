@@ -26,8 +26,6 @@ function onGetWhitelist(items) {
   console.info("[cs/onGetWhitelist] document domain:", document.domain);
 
   whitelisted_domains = items['whitelist'];
-  // XXX temp
-  whitelisted_domains = ['www.paypal.com', 'www.mozilla.org'];
   console.info("[cs/onGetWhitelist] whitelist: ", `${whitelisted_domains}`);
 
   // whitelisting needs to be done carefully: phish will have
@@ -104,7 +102,7 @@ function chunkAndCheck(regex, content) {
 
   var m = '';
   var pos_list = [0];
-  
+
   do {
     m = regex.exec(content);
     if (m) {
@@ -112,22 +110,22 @@ function chunkAndCheck(regex, content) {
       pos_list.push(m['index']);
     }
   } while (m);
-  
+
   pos_list.push(content.length);
-  
+
   //console.log(pos_list);
-  
+
   var pos_tuples_list = [];
-  
+
   for( var i = 0; i < pos_list.length - 1; i++ ) {
     pos_tuples_list.push( [ pos_list[i], pos_list[i+1] ] );
   }
-  
+
   //console.log(pos_tuples_list);
 
   var bad = 0;
   var total = 0;
-  
+
   pos_tuples_list.forEach(function(tuple) {
     var b = tuple[0];
     var e = tuple[1];
@@ -141,10 +139,10 @@ function chunkAndCheck(regex, content) {
     var res = checkHash(h);
     if(res == 1) {
       bad = bad + 1;
-    } 
+    }
     total = total + 1;
-    
-    if (debug === 1 ) { 
+
+    if (debug === 1 ) {
       console.log("pb chunkAndHash > " + tuple + " " + res + " " + h.toString().substring(0,10));
     }
   });
@@ -254,6 +252,16 @@ case  1: // run detection
   var dom = getCleanedDomHtml();
   var dom_hashes = hashEverythingAndReturn(dom);
 	console.debug("[cs/1] dom_hashes:", dom_hashes.join('\n'));
+
+  var msgSend = browser.runtime.sendMessage(
+    { action: 'check_hashes',
+      hashes: dom_hashes });
+  msgSend.then( msgResp => { console.log("response:", msgResp.response); }, onError);
+
+  msgSend = browser.runtime.sendMessage(
+    { action: 'log',
+      msg: "hello" });
+  msgSend.then( msgResp => { console.log("response:", msgResp.response); }, onError);
 
   /*chrome.runtime.sendMessage(
     { action: 'check_hashes',
