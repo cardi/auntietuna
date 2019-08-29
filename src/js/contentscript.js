@@ -4,14 +4,6 @@
 
 console.debug("[cs] begin");
 
-// global variables
-let storage = browser.storage.local,
-		runMode = -1,
-    shouldCrawl = 0,
-    shouldRun = -1,
-    whitelisted_domains = [];
-
-// other stuff
 const DebugOptions = {
   "None"               : 0,
   "AlwaysRunDetection" : 1 << 0,
@@ -19,10 +11,14 @@ const DebugOptions = {
   "Verbose"            : 1 << 2,
 }
 
-var debug = DebugOptions.None;
-var obj = obj || {};
-obj['ready'] = 0;
-obj['hashes'] = null;
+
+// global variables
+let storage = browser.storage.local,
+		runMode = -1,
+    shouldCrawl = 0,
+    shouldRun = -1,
+    whitelisted_domains = [],
+    debug = DebugOptions.None;
 
 // set debug options
 debug = debug | DebugOptions.AlwaysRunDetection;
@@ -95,72 +91,7 @@ function onGetWhitelist(items) {
   console.debug("[cs/onGetWhitelist]", `${JSON.stringify(debug_info)}`);
 }
 
-function checkHash(hash) {
-  if(obj['hashes'] != null) {
-    if(obj['hashes'].indexOf(hash.toString()) != -1) {
-      // hash exists on the bad list
-      return 1;
-    } else {
-      return 0;
-    }
-  } else {
-    console.log("[cs/checkHash] obj[hashes] is null");
-  }
-}
-
 // TODO put a red border around matches (for debugging/info?)
-function chunkAndCheck(regex, content) {
-
-  var m = '';
-  var pos_list = [0];
-
-  do {
-    m = regex.exec(content);
-    if (m) {
-      //console.log(m['index']);
-      pos_list.push(m['index']);
-    }
-  } while (m);
-
-  pos_list.push(content.length);
-
-  //console.log(pos_list);
-
-  var pos_tuples_list = [];
-
-  for( var i = 0; i < pos_list.length - 1; i++ ) {
-    pos_tuples_list.push( [ pos_list[i], pos_list[i+1] ] );
-  }
-
-  //console.log(pos_tuples_list);
-
-  var bad = 0;
-  var total = 0;
-
-  pos_tuples_list.forEach(function(tuple) {
-    var b = tuple[0];
-    var e = tuple[1];
-
-    // only do this for chunk sizes >= 25 otherwise we will get
-    // tons of false positives
-    if((e - b + 1) < 25) { return; }
-
-    var h = CryptoJS.SHA256( content.substring(b,e) );
-
-    var res = checkHash(h);
-    if(res == 1) {
-      bad = bad + 1;
-    }
-    total = total + 1;
-
-    if (debug & DebugOptions.Verbose ) {
-      console.log("pb chunkAndHash > " + tuple + " " + res + " " + h.toString().substring(0,10));
-    }
-  });
-
-  return { 'bad' : bad, 'total' : total };
-}
-
 function chunkAndHash(regex, content) {
   var m = '';
   var pos_list = [0];
