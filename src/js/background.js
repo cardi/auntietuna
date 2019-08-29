@@ -51,10 +51,10 @@ async function loadHashURL(url) {
   });
 }
 
-function handleMessage(request, sender, sendResponse) {
+async function handleMessage(request, sender, sendResponse) {
   // who are we getting the message from?
   if (sender.tab != null) {
-    console.log("[bg/handleMessage] request from tab", sender.tab.id, ": ", request.action);
+    console.log("[bg/handleMessage] request from tab", sender.tab.id, ":", request.action);
   } else {
     console.log("[bg/handleMessage] request:", request.action);
   }
@@ -64,6 +64,71 @@ function handleMessage(request, sender, sendResponse) {
     break;
   ////////////////////////////////////
   case "check_hashes":
+    console.log("[bg/handleMessage/check_hashes] received");
+    console.debug("[bg/handleMessage/check_hashes] dom_hashes", request.hashes);
+
+    // return (known good entries) where (any entry inside `request.hashes`)
+		// exists in the `hashes` of the (known good entries)
+    const result = await db.good.where('hashes').anyOf(request.hashes).distinct().toArray();
+    //console.debug("db result:", result);
+
+		// build an array of matches for debugging
+		let matches = []
+		for (const entry of result) {
+			let matchesEntry = {
+				 'domain'        : entry.domain
+        ,'last_updated'  : entry.last_updated
+        ,'id'            : entry.id
+				,'numMatches'    : 0
+				,'matchedHashes' : []
+				}
+
+			// compute which hashes in `request.hashes` matched with `knownGoodEntry.hashes`
+     const intersection = entry.hashes.filter(value => request.hashes.includes(value));
+
+			matchesEntry.matchedHashes = intersection;
+			matchesEntry.numMatches = intersection.length;
+
+			matches.push(matchesEntry);
+		}
+		console.debug("xxx:", matches);
+
+		let numberSubmittedHashes = request.hashes.length;
+
+		// find how many total distinct matches across the hashes of all known good entries
+		let allHashes = result.map(entry => entry.hashes);
+		let mergedAllHashes = [].concat.apply([], allHashes);
+		console.debug("xxx2:", mergedAllHashes);
+    const intersection = request.hashes.filter(value => mergedAllHashes.includes(value));
+		let numberMatchedHashes = intersection.length;
+		console.debug("xxx3:", numberMatchedHashes);
+
+		let uniqueDomains = new Set(result.map(entry => entry.domain));
+		console.debug("uniqueDomains:", uniqueDomains);
+
+		let numberMatchedDomains = uniqueDomains.size;
+		console.debug("numberMatchedDomains:", numberMatchedDomains);
+
+    //  for each hash:
+    //    what domains (+dates?) does it show up in?
+    //      debug[hash] += domain+date (for our debugging purposes)
+    //    increment counter += 1
+    //  return { domains: domains, matches: counter, debug: debug }
+
+    // number of submitted hashes
+    // number of matched hashes (total)
+    // number of matched domains (total)
+    // debug:
+    //  for each domain, how many matched hashes?
+
+    let response =
+      {
+        response                 : "ok"
+        ,number_submitted_hashes : numberSubmittedHashes
+        ,number_matched_hashes   : numberMatchedHashes
+        ,number_matched_domains  : numberMatchedDomains
+      };
+    return new Promise(resolve => resolve(response));
     break;
   ////////////////////////////////////
   case "dropDb":
@@ -74,18 +139,28 @@ function handleMessage(request, sender, sendResponse) {
   ////////////////////////////////////
   case "log":
     console.log("[bg/handleMessage/log]", request.msg);
-    sendResponse({response: ""});
+    //sendResponse({response: ""});
+    return new Promise(resolve => resolve({response: "ok"}));
     break;
   ////////////////////////////////////
   case "page_add_hashes":
+    console.debug("[bg/handleMessage/page_add_hashes]", request);
+    return new Promise(resolve => resolve({response: "not implemented"}));
     break;
   ////////////////////////////////////
   case "redirect":
     break;
   ////////////////////////////////////
+  case "echo":
+    console.log("[bg/handleMessage/echo] echo requested:", request.msg);
+    //sendResponse({response: request.msg});
+    return new Promise(resolve => resolve({response: request.msg}));
+    break;
+  ////////////////////////////////////
   default:
     console.log("[bg/handleMessage] received unknown action:", request.action);
-    sendResponse({response: ""});
+    //sendResponse({response: ""});
+    return new Promise(resolve => resolve({response: ""}));
   }
 }
 ////////////////////////////////////////////////////////////////////////

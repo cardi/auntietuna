@@ -12,10 +12,21 @@ let storage = browser.storage.local,
     whitelisted_domains = [];
 
 // other stuff
-var debug = 1;
+const DebugOptions = {
+  "None"               : 0,
+  "AlwaysRunDetection" : 1 << 0,
+  "NoRedirectOnMatch"  : 1 << 1,
+  "Verbose"            : 1 << 2,
+}
+
+var debug = DebugOptions.None;
 var obj = obj || {};
 obj['ready'] = 0;
 obj['hashes'] = null;
+
+// set debug options
+debug = debug | DebugOptions.AlwaysRunDetection;
+debug = debug | DebugOptions.NoRedirectOnMatch;
 
 // function defs
 function onError(error) {
@@ -142,7 +153,7 @@ function chunkAndCheck(regex, content) {
     }
     total = total + 1;
 
-    if (debug === 1 ) {
+    if (debug & DebugOptions.Verbose ) {
       console.log("pb chunkAndHash > " + tuple + " " + res + " " + h.toString().substring(0,10));
     }
   });
@@ -187,7 +198,9 @@ function chunkAndHash(regex, content) {
     var h = CryptoJS.SHA256( content.substring(b,e) );
 
     hash_vector.push(h.toString(CryptoJS.enc.Hex));
-    //console.log(h + " " + content.substring(b,e));
+    if (debug & DebugOptions.Verbose) {
+      console.debug(b + "-" + e + ": " + h + " `" + content.substring(b,e) + "`");
+    }
   });
 
   return hash_vector;
@@ -195,15 +208,22 @@ function chunkAndHash(regex, content) {
 
 function getCleanedDomHtml() {
   let cleaned_html = ((document.all[0].outerHTML)
-                        .replace(/\t/g, ' ')
-                        .replace(/\s\s+/g, ' ')
-                        .replace(/^\s*$/g, '')
-                        .replace(/^\s*/g, '')
-                        .replace(/\s\s+/g, ' ')
-                        .replace(/\s+/g, ' ')
-                        .replace(/> </g, '><')
+                        .replace(/[ \t]+/g, ' ')
+                        .replace(/[\r\n]+/g, '')
                         .trim());
-  console.debug("[cs/getCleanedDomHtml] cleaned_html:", cleaned_html);
+
+//                      .replace(/\t/g, ' ')
+//                      .replace(/\s\s+/g, ' ')
+//                      .replace(/^\s*$/g, '')
+//                      .replace(/^\s*/g, '')
+//                      .replace(/\s\s+/g, ' ')
+//                      .replace(/\s+/g, ' ')
+//                      .replace(/> </g, '><')
+//                      .trim());
+
+  if (debug & DebugOptions.Verbose ) {
+    console.debug("[cs/getCleanedDomHtml] cleaned_html:", cleaned_html);
+  }
 
   return cleaned_html;
 }
@@ -215,6 +235,17 @@ function hashEverythingAndReturn(content) {
 }
 
 ////////////////////////////////////////////////////////////////////////
+
+/*
+  XXX it's possible that the content script will execute before the
+  background script has finished loading (on Firefox only?).
+
+  see Firefox Bugzilla report here:
+  https://bugzilla.mozilla.org/show_bug.cgi?id=1474727
+
+  TODO implement workaround, if necessary
+*/
+
 // entry point
 storage
   .get('whitelist')
@@ -222,7 +253,7 @@ storage
 // main routine
 onGetWhitelist(items);
 
-if ( debug == 1 ) { runMode = 1; }
+if ( debug | DebugOptions.AlwaysRunDetection ) { runMode = 1; }
 
 switch ( runMode ) {
 case -1: // should never get here
@@ -232,9 +263,12 @@ case  0: // whitelisted, do nothing
   console.log("[cs] runMode:", runMode, "=> whitelisted site");
   return;
 case  1: // run detection
-  console.log("[cs] runMode:", runMode, "=> unknown site, run detection");
-  // XXX run checks in background.js or here?
-  //
+  if ( debug & DebugOptions.AlwaysRunDetection  ) {
+    console.log("[cs] runMode:", runMode, "=> debug enabled, run detection");
+  } else {
+    console.log("[cs] runMode:", runMode, "=> unknown site, run detection");
+  }
+
   // 2016-01-11 method #1: hash checks in cs-end
   // running indexedDB doens't work here because of CSP...
   // # check in map (need snapshots inside localStorage)
@@ -251,69 +285,89 @@ case  1: // run detection
 
   var dom = getCleanedDomHtml();
   var dom_hashes = hashEverythingAndReturn(dom);
-	console.debug("[cs/1] dom_hashes:", dom_hashes.join('\n'));
+	console.debug("[cs/1] dom_hashes:", dom_hashes);
 
-  var msgSend = browser.runtime.sendMessage(
-    { action: 'check_hashes',
-      hashes: dom_hashes });
-  msgSend.then( msgResp => { console.log("response:", msgResp.response); }, onError);
+  // TODO send a Set of a hashes (vs. array)
+  var msgSend = browser.runtime.sendMessage({
+                  action: 'check_hashes',
+                  hashes: dom_hashes
+                });
 
-  msgSend = browser.runtime.sendMessage(
-    { action: 'log',
-      msg: "hello" });
-  msgSend.then( msgResp => { console.log("response:", msgResp.response); }, onError);
+  msgSend.then( msgResp => {
+    console.log("[cs/1] check_hashes response:", msgResp);
 
-  /*chrome.runtime.sendMessage(
-    { action: 'check_hashes',
-      hashes: dom_hashes },
-    function(response) {
-      //
-      //  response format:
-      //  {
-      //    matches: 13,
-      //    domains:
-      //      { good.example.com: 10,
-      //        bad.example.com: 3 }
-      //  }
-      //
-      console.debug(("pb cs-end check_hashes >"
-        + " bad: " + response.matches
-        + " total: " + dom_hashes.length));
-      console.debug("pb cs-end check_hashes > domains: ");
-      console.log(response.domains);
+    // TODO reporting false positives
+    // TODO sane logging for debugging/experimental data collection
 
-      if (response.matches > 0 || debug == 1) {
-        // redirect user to warning page
-        var data = {
-          debugMode: debug,
-          visited: document.domain,
-          matches: response.matches,
-          total: dom_hashes.length,
-          suggested: response.domains
-        };
-        var redirectUrl = chrome.runtime.getURL('blocked.html') + "?data=" + util.utf8_to_b64(JSON.stringify(data));
-        console.log("pb cs-end check_hashes > redirecting to " + redirectUrl);
-        chrome.runtime.sendMessage({action: "redirect", msg: redirectUrl}, function(response) {
-          if (chrome.runtime.lastError) {
-            console.log("pb cs-end check_hashes > error in redirect request: " + chrome.runtime.lastError.message);
-          }
-        });
+    // site is possibly a phish
+    if (msgResp.number_matched_hashes > 0) {
+
+      console.log("[cs/1] site is suspected phish.");
+
+      var data = {
+        debugMode : debug,
+        visited   : document.domain,
+        matches   : msgResp.number_matched_hashes,
+        total     : msgResp.number_submitted_hashes,
+        suggested : "TODO"
+      };
+
+      let redirectUrl = browser.runtime.getURL('blocked.html') +
+          "?data=" + util.utf8_to_b64(JSON.stringify(data));
+
+      // don't redirect if we have DebugOption enabled
+      if (debug & DebugOptions.NoRedirectOnMatch) {
+        console.debug("[cs/1] data:", data);
+        console.debug("[cs/1] redirectUrl:", redirectUrl);
+      } else {
+        // redirect by sending a request to background
+        var msgSendRedirect = browser.runtime.sendMessage({
+                                action: "redirect",
+                                msg: redirectUrl});
+        msgSendRedirect.then( msgRespRedirect => {
+          // TODO
+        }, onError);
       }
-    });//*/
+    } else {
+      console.log("[cs/1] site is not suspected phish");
+    }
+  }, onError);
+
+  /*// test browser.runtime.sendMessage()
+  console.debug("[cs] sendMessage: echo - hello");
+  var msgSendTest = browser.runtime.sendMessage({
+                      action: 'echo',
+                      msg: "hello"
+                    });
+  msgSendTest.then( msgResp =>
+    { console.log("[cs/1] echo response:", msgResp.response); },
+    onError);
+  //*/
   return;
 case  2: // recrawl page due to expiration
   console.log("[cs] runMode:", runMode, "=> refresh crawl");
-	/* XXX rewrite in progress
+
   var dom = getCleanedDomHtml();
   var dom_hashes = hashEverythingAndReturn(dom);
-  chrome.runtime.sendMessage(
-    { action: 'page_add_hashes',
-      domain: document.domain,
-      last_updated: Date.now(),
-      hashes: dom_hashes },
-    function(response) {
-      console.log("pb cs-end page_add_hashes > resp: " + response.msg);
-    });//*/
+	console.debug("[cs/3] dom_hashes:", dom_hashes);
+
+  // TODO send a Set of a hashes (vs. array)
+
+  // TODO backend needs rewrite
+
+  // TODO consider behavior of when multiple pages from the same
+  // domain are added. maybe also store page URL
+  var msgSend = browser.runtime.sendMessage({
+                  action       : 'page_add_hashes',
+                  domain       : document.domain,
+                  last_updated : Date.now(),
+                  hashes       : dom_hashes
+                });
+
+  msgSend.then( msgResp =>
+    { console.log("[cs/3] page_add_hashes response:", msgResp.response); },
+    onError);
+
   return;
 default:
   break;
