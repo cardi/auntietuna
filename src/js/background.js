@@ -229,6 +229,10 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 // debugging messages
 console.debug(await db.good.toArray());
+let openPreferencesPage = browser.tabs.create({
+														url: browser.runtime.getURL("options.html")
+													});
+openPreferencesPage.then(tab => { console.log("[bg] opened", tab.id) }, onError);
 console.log("[bg] done.");
 ////////////////////////////////////////////////////////////////////////
 })();
