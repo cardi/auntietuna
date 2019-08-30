@@ -1,61 +1,85 @@
-<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!DOCTYPE html>
 <html>
 <head>
-  <title>AuntieTuna Options</title>
-  <link href="options.css" type="text/css" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AuntieTuna</title>
+  <link href="css/options.css" type="text/css" rel="stylesheet">
 </head>
-
 <body>
-  <h2>AuntieTuna </h2>
+  <header>
+  <h2>AuntieTuna &mdash; Preferences</h2>
+  </header>
+
+  <section>
+  <h3>Website Management</h3>
+
+  <!--
   <p>
-    To import foreign hashes websites in .json formatiing, click button below to upload file.  <br />
-  <input type="file" id="import" >
-  </p>
-  <br />
-	<table id = "myTable" cellspacing= "0" >
-		<tr class = "dark">
+	<table id="myTable" cellspacing="0" >
+		<tr class="dark">
 		<th></th>
 		<th></th>
 		<th></th>
-    <th id = "foreign">Imported</th>
-		<th id = "date">Recent Hash</th>
-		<th id = "web" >Website</th>
-		<th id = "hash">Hash</th>
+    <th id="foreign">Imported</th>
+		<th id="date">Recent Hash</th>
+		<th id="web" >Website</th>
+		<th id="hash">Hash</th>
 		</tr>
-
-
 	</table>
+  </p>
+
   <p>
-    <br/>
     <button id= "all">Download All</button>
     <button id ="selected">Download Selected</button>
   </p>
 
-	<br>
+	<p>Press the <img src="checkmark.png" width="25px" height="25px"> icon to enable/disable a site. (in progress...)</p>
+	<p>Press the <img src="trash.png" width="25px" height="25px"> icon to remove site from known good list. </p>
+	<p>Press the <img src="reload.png" width="25px" height="25px"> icon to refresh hashes. (Let the opened window to load fully for this to work.)</p>
 
-	<p> Press the <img  src = "checkmark.png" width="25px" height="25px"> icon is used to enable/disable a site. (in progress...)</p>
-	<p> Press the <img  src = "trash.png" width="25px" height="25px"> icon to remove site from known good list. </p>
-	<p> Press the <img  src = "reload.png" width="25px" height="25px"> icon to refresh hash. (Let the opened window to load fully for this to work.)</p>
+  <br />-->
 
-  <br />
-  <div id="status"></div>
-  <hr />
   <p>
-  <div id="storageUsed"></div>
-  <!--button id="backup">Backup to file</button>
-  <button id="load">Restore from file</button-->
-<br>
+  <fieldset>
+    <legend>Export Website Hashes</legend>
+    <p>
+      <button id="exportAllHashes">Export All</button>
+    </p>
+  </fieldset>
   </p>
 
-  <p> Debug / Developers:
-   <br /><br />
-  <button id="reset">Reset all hashes...</button>
-  <button id="loadDefault">Load initial set</button>
+  <p>
+  <fieldset>
+    <legend>Import Website Hashes</legend>
+    <p>
+    Select a <code>.json</code> formatted file from your computer to
+    import.
+    <form action="#">
+      <input type="file" id="importFileName">
+      <input type="submit" id="importSubmit" value="Import">
+    </form>
+    </p>
+  </fieldset>
   </p>
+  <hr>
+  </section>
 
-  <script src="FileSaver.min.js"></script>
-  <script src="util.js"></script>
-  <script src="options.js"></script>
+  <footer>
+  <h3>Debug / Developers:</h3>
+  <p>
+    <span id="status"></span><br>
+    <span id="storageUsed"></span><br>
+    <button id="resetHashes">Reset all hashes...</button>
+    <button id="loadDefaultHashes">Load initial set of hashes</button>
+  </p>
+  </footer>
 
+  <script src="lib/FileSaver.min.js"></script>
+  <script src="lib/dexie.js"></script>
+  <script src="js/db.js" type="module"></script>
+  <script src="js/util.js"></script>
+  <script src="js/options.js" type="module"></script>
 </body>
 </html>

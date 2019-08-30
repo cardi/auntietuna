@@ -2,6 +2,8 @@
 
 'use strict';
 
+import {testExportText} from '/js/db.js';
+
 (async function(){
 
 const db = new Dexie('auntietuna');
@@ -233,6 +235,12 @@ let openPreferencesPage = browser.tabs.create({
 														url: browser.runtime.getURL("options.html")
 													});
 openPreferencesPage.then(tab => { console.log("[bg] opened", tab.id) }, onError);
+
+// test module import
+console.log("[bg] testing imported variable:", testExportText);
+console.assert("lorem ipsum" == testExportText, { textExportText: testExportText } );
+/////////////////////
+
 console.log("[bg] done.");
 ////////////////////////////////////////////////////////////////////////
 })();

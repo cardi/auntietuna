@@ -1,28 +1,42 @@
-/*options.css */
-@import url('https://fonts.googleapis.com/css?family=Didact+Gothic');
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 
-*{
+html, body {
 	margin: 0;
-	font-family: 'Didact Gothic', sans-serif;
+	font-family: Helvetica, sans-serif;
+  font-size: 18px;
 }
 
 p {
-	font-family: sans-serif;
-	margin-left: 20px;
-	font-size: 14px;
+	font-family: Helvetica, sans-serif;
+	font-size: 1rem;
 }
 
-h2 {
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+h2 { font-size: 1.5rem; }
+h3 { font-weight: bold; }
+
+fieldset { border: 1px solid #000; }
+fieldset legend {
+  padding: 0 1ex;
+  font-weight: normal;
+}
+
+header {
 	background-color: black;
-	font-size: 25px;
 	color: white;
-	height: 50px;
-	font-family: 'Didact Gothic', sans-serif;
-	padding-left: 15px;
-	padding-top: 5px;
-	margin-bottom: 20px
+	line-height: 3rem;
+  padding: 0 0 0 1rem;
+  margin: 0;
+}
 
-
+section, footer {
+  padding: 1rem 1rem 0 1rem;
 }
 
 table {
@@ -31,21 +45,27 @@ table {
 	width: 980px;
 	border: 1px solid rgb(165, 165, 165);
 	margin-left: 20px;
-	font-family: 'Didact Go thic', sans-serif;
+	font-family: Helvetica, sans-serif;
 	font-size: 18px;
 	padding: 0;
 	text-align: center;
 	margin: 0px 20px;
-
-}
-.chooseDownload {
-
-
 }
 
-.hidden {
-	display: none;
+input, button {
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 1.25rem;
+  padding: 0.5em 1em;
 }
+
+button:hover {
+
+}
+
+.chooseDownload { }
+
+.hidden { display: none; }
 
 .getHash {
 	text-align: center;
@@ -125,8 +145,6 @@ table {
 #date {
 	width: 140px;
 }
-
-
 
 /*#reset, #loadDefault {
 	font-family: sans-serif;

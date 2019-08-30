@@ -5,9 +5,7 @@
   "description"      : "chunks and hashes webpages to checks for phish",
 
   "background": {
-    "scripts": ["lib/dexie.js"
-              , "js/util.js"
-              , "js/background.js"]
+    "page": "background.html"
   },
 
   "browser_action": {
@@ -31,16 +29,18 @@
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';",
 
   "options_ui": {
-    "page"         : "options.html",
-    "chrome_style" : false
+    "page"          : "options.html",
+    "open_in_tab"   : true,
+    "browser_style" : true,
+    "chrome_style"  : true
   },
 
   "permissions": [
     "activeTab"
-  , "storage"
-  , "tabs"
-  , "unlimitedStorage"
-  , "<all_urls>"
+   ,"storage"
+   ,"tabs"
+   ,"unlimitedStorage"
+   ,"<all_urls>"
   ],
 
   "web_accessible_resources": [
