@@ -26,22 +26,29 @@ function update_status(txt) {
   status.textContent = txt;
 }
 
+// TODO `id` should be an array of ints
 async function exportHashes(id) {
   if (id == null) {
     // select all
     const result = await db.good.toArray();
-    console.log("button:", result);
+    //console.debug("button:", result);
+    let data = JSON.stringify(result);
+    //console.debug("data:", data);
 
-    let blob = new Blob([result], {type: "application/json;charset=utf-8"});
+    // build json blob for saving
+    let blob = new Blob([data], {type: "application/json;charset=utf-8"});
 
+    // build filename
+    let date = new Date();
     let url = window.URL.createObjectURL(blob);
-    console.log(url);
+    let name = `hashes-${date.toJSON()}.json`;
 
-    let name = "hashes" + ".json";
-    saveAs(blob,name);
+    console.log("[options/exportHashes]", "exporting to", name);
 
+    // use FileSaver to save file
+    saveAs(blob, name);
   } else {
-
+    // TODO select one or more rows by id, and export
   }
 }
 ////////////////////////////////////////////////////////////////////////

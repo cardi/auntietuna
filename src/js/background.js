@@ -6,7 +6,6 @@ import {db, testExportText} from '/js/db.js';
 
 (async function(){
 
-//const db = new Dexie('auntietuna');
 const manifest = browser.runtime.getManifest();
 const storage = browser.storage.local;
 
@@ -170,13 +169,12 @@ async function handleMessage(request, sender, sendResponse) {
 
 // entry point /////////////////////////////////////////////////////////
 
-// declare tables, ids and indexes
-//db.version(1).stores({
-//  good: '++id, domain, *hashes'
-//});
+// load hashes from WARs to db
+// TODO move to function
+db.on('populate', () => {
+	console.log("[bg] db is empty, populating with WARs");
+});
 
-// load hashes
-// XXX move to function
 console.log("[bg] list of WARs to process:", manifest.web_accessible_resources);
 
 let hashes_list = manifest.web_accessible_resources;
@@ -230,7 +228,7 @@ for (const hashes_list_entry of hashes_list) {
 browser.runtime.onMessage.addListener(handleMessage);
 
 // debugging messages
-console.debug(await db.good.toArray());
+//console.debug(await db.good.toArray());
 let openPreferencesPage = browser.tabs.create({
 														url: browser.runtime.getURL("options.html")
 													});
