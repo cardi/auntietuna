@@ -2,7 +2,7 @@
 
 'use strict';
 
-import {testExportText} from '/js/db.js';
+import {db, testExportText} from '/js/db.js';
 
 (async function(){
 
@@ -30,7 +30,16 @@ async function exportHashes(id) {
   if (id == null) {
     // select all
     const result = await db.good.toArray();
-    result.then( entries => { console.log(entries); } );
+    console.log("button:", result);
+
+    let blob = new Blob([result], {type: "application/json;charset=utf-8"});
+
+    let url = window.URL.createObjectURL(blob);
+    console.log(url);
+
+    let name = "hashes" + ".json";
+    saveAs(blob,name);
+
   } else {
 
   }
@@ -39,19 +48,14 @@ async function exportHashes(id) {
 
 // entry point /////////////////////////////////////////////////////////
 
-// TODO keep one 'db' variable around, see 'js/db.js'
-//const db = new Dexie('auntietuna').open();
-
 // test module import
 console.log("[options] testing imported variable:", testExportText);
 console.assert("lorem ipsum" == testExportText, { textExportText: testExportText } );
-/////////////////////
+///////////////////*/
 
-const result = await db.good.toArray();
-result.then( entries => { console.log(entries); } );
-
+// add event listeners to options.html
 document.getElementById('exportAllHashes')
-        .addEventListener('click', exportHashes(null));
+        .addEventListener('click', () => exportHashes(null), false);
 
 ////////////////////////////////////////////////////////////////////////
 })();

@@ -2,11 +2,11 @@
 
 'use strict';
 
-import {testExportText} from '/js/db.js';
+import {db, testExportText} from '/js/db.js';
 
 (async function(){
 
-const db = new Dexie('auntietuna');
+//const db = new Dexie('auntietuna');
 const manifest = browser.runtime.getManifest();
 const storage = browser.storage.local;
 
@@ -171,9 +171,9 @@ async function handleMessage(request, sender, sendResponse) {
 // entry point /////////////////////////////////////////////////////////
 
 // declare tables, ids and indexes
-db.version(1).stores({
-  good: '++id, domain, *hashes'
-});
+//db.version(1).stores({
+//  good: '++id, domain, *hashes'
+//});
 
 // load hashes
 // XXX move to function

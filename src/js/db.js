@@ -7,3 +7,9 @@
 // * https://stackoverflow.com/a/51258581
 
 export const testExportText = "lorem ipsum";
+
+export const db = new Dexie('auntietuna');
+
+db.version(1).stores({
+  good: '++id, domain, *hashes'
+});
