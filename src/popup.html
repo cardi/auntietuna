@@ -1,15 +1,17 @@
-<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!DOCTYPE html>
 <html>
 <head>
-<title></title>
-<style>
+  <meta charset="utf-8">
+  <title></title>
+  <style>
   body {
-    font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+    font-family: Helvetica, sans-serif;
     font-size: 100%;
   }
-  *{
-    margin: 0;
-  }
+
+  * { margin: 0; }
+
   #status {
     /* avoid an excessively wide status text */
     white-space: pre;
@@ -21,17 +23,16 @@
     padding: 0 5px;
   }
 
-#top {
-	height: 35px;
-	width: 100%;
-	border-radius: 0px;
-	font-size: 20px;
-	text-align: center;
-	background-color: rgb(12, 15, 13);
-	border-color: rgb(12, 15, 13);
-  color: white;
-  padding-top: 3px;
-}
+  #top {
+    width: 100%;
+    border-radius: 0px;
+    font-size: 20px;
+    text-align: center;
+    background-color: rgb(12, 15, 13);
+    border-color: rgb(12, 15, 13);
+    color: white;
+    padding: 10px 0 10px 0;
+  }
 
   h3 {
     background-color: #ddd;
@@ -40,7 +41,7 @@
     font-size: 14px;
     text-align: center;
     padding: 5px 0;
-    margin: 1em 0 1em 0;
+    margin: 0em 0 1em 0;
   }
 
   .btn {
@@ -71,31 +72,34 @@
   .btn-debug:hover {
     background: #666;
   }
+
   #options:hover {
     background: #666;
   }
 
   #options {
     background-color: rgb(219, 120, 0);
-	  border-color: rgb(219, 120, 0);
+    border-color: rgb(219, 120, 0);
   }
 
-  button:focus {outline:0 !important;}
-</style>
+  button:focus { outline: 0 !important; }
+  div { text-align: center; padding: 0.75em 0.75em; }
+  </style>
 </head>
 <body>
-  <p id= "top">AuntieTuna</p>
-  <div style="text-align: center; padding-top: 0.75em;">
-    <button class="btn" id="add">add to good list</button>
-    <button class="btn btn-debug" id="dl">[debug] dl hashes</button>
-    <button class="btn" id ="options">options</button>
+  <p id="top">AuntieTuna</p>
+  <div>
+    <button class="btn" id="add">add to good list</button><br>
+    <button class="btn" id="options">options</button><br>
+    <button class="btn btn-debug" id="dl">download hashes</button>
   </div>
 
-  <h3>messages</h3>
+  <h3>status</h3>
   <div id="status"></div>
+  <br>
   <img id="image-result" hidden>
-  <script src="FileSaver.min.js"></script>
-  <script src="util.js"></script>
-  <script src="popup.js"></script>
+  <script src="js/FileSaver.min.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/popup.js"></script>
 </body>
 </html>
