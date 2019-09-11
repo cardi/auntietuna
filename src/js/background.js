@@ -52,6 +52,53 @@ async function loadHashURL(url) {
   });
 }
 
+async function loadHashURLList(urls) {
+  // TODO better error handling
+  for (let i=0; i<urls.length; i++) {
+    // from: onPopulate
+    // TODO migrate to this fxn instead
+    console.log("%c------------------------------------------------------------------------",
+      "color:green;");
+
+    let hashes_url = urls[i];
+
+    console.log("[bg] xxx1:", hashes_url);
+    let entry = await loadHashURL(hashes_url);
+    console.log("[bg] xxx2:", entry);
+
+    // TODO validate entry: { domain: , last_updated: , hashes: }
+    if(entry != null) {
+      console.log("[bg] xxx3");
+      entry.last_updated = (new Date(entry.last_updated)).toJSON();
+      entry.imported = (new Date()).toJSON();
+      console.log("[bg]", entry.last_updated);
+
+      // add entry to db. dupes are allowed here, but to what extent?
+      await db.good.add(entry);
+
+      // add domain to whitelist
+      storage.get("whitelist").then( items => {
+        console.debug("[bg] whitelist:", items["whitelist"]);
+
+        if (items['whitelist'] == null) { items['whitelist'] = []; }
+        if (items['whitelist'].constructor === Array) {
+          items['whitelist'] = (items['whitelist'].concat(entry.domain)).filter(util.unique);
+          storage.set(items).then( () => {
+            console.log("[bg] success:", items['whitelist']);
+          }, onError);
+        }
+      }, onError);
+    } else {
+      // we didn't load anything, so move on
+    }
+
+    // we're done with this object
+    window.URL.revokeObjectURL(urls[i]);
+  }
+
+  return;
+}
+
 async function handleMessage(request, sender, sendResponse) {
   // who are we getting the message from?
   if (sender.tab != null) {
@@ -69,46 +116,47 @@ async function handleMessage(request, sender, sendResponse) {
     console.debug("[bg/handleMessage/check_hashes] dom_hashes", request.hashes);
 
     // return (known good entries) where (any entry inside `request.hashes`)
-		// exists in the `hashes` of the (known good entries)
+    // exists in the `hashes` of the (known good entries)
     const result = await db.good.where('hashes').anyOf(request.hashes).distinct().toArray();
     //console.debug("db result:", result);
 
-		// build an array of matches for debugging
-		let matches = []
-		for (const entry of result) {
-			let matchesEntry = {
-				 'domain'        : entry.domain
+    // build an array of matches for debugging
+    let matches = []
+    for (const entry of result) {
+      let matchesEntry = {
+         'domain'        : entry.domain
         ,'last_updated'  : entry.last_updated
+        ,'imported'      : entry.imported
         ,'id'            : entry.id
-				,'numMatches'    : 0
-				,'matchedHashes' : []
-				}
+        ,'numMatches'    : 0
+        ,'matchedHashes' : []
+        }
 
-			// compute which hashes in `request.hashes` matched with `knownGoodEntry.hashes`
+      // compute which hashes in `request.hashes` matched with `knownGoodEntry.hashes`
      const intersection = entry.hashes.filter(value => request.hashes.includes(value));
 
-			matchesEntry.matchedHashes = intersection;
-			matchesEntry.numMatches = intersection.length;
+      matchesEntry.matchedHashes = intersection;
+      matchesEntry.numMatches = intersection.length;
 
-			matches.push(matchesEntry);
-		}
-		console.debug("xxx:", matches);
+      matches.push(matchesEntry);
+    }
+    console.debug("xxx:", matches);
 
-		let numberSubmittedHashes = request.hashes.length;
+    let numberSubmittedHashes = request.hashes.length;
 
-		// find how many total distinct matches across the hashes of all known good entries
-		let allHashes = result.map(entry => entry.hashes);
-		let mergedAllHashes = [].concat.apply([], allHashes);
-		console.debug("xxx2:", mergedAllHashes);
+    // find how many total distinct matches across the hashes of all known good entries
+    let allHashes = result.map(entry => entry.hashes);
+    let mergedAllHashes = [].concat.apply([], allHashes);
+    console.debug("xxx2:", mergedAllHashes);
     const intersection = request.hashes.filter(value => mergedAllHashes.includes(value));
-		let numberMatchedHashes = intersection.length;
-		console.debug("xxx3:", numberMatchedHashes);
+    let numberMatchedHashes = intersection.length;
+    console.debug("xxx3:", numberMatchedHashes);
 
-		let uniqueDomains = new Set(result.map(entry => entry.domain));
-		console.debug("uniqueDomains:", uniqueDomains);
+    let uniqueDomains = new Set(result.map(entry => entry.domain));
+    console.debug("uniqueDomains:", uniqueDomains);
 
-		let numberMatchedDomains = uniqueDomains.size;
-		console.debug("numberMatchedDomains:", numberMatchedDomains);
+    let numberMatchedDomains = uniqueDomains.size;
+    console.debug("numberMatchedDomains:", numberMatchedDomains);
 
     //  for each hash:
     //    what domains (+dates?) does it show up in?
@@ -144,6 +192,17 @@ async function handleMessage(request, sender, sendResponse) {
     return new Promise(resolve => resolve({response: "ok"}));
     break;
   ////////////////////////////////////
+  case "options_import_hashes":
+    console.log("[bg/handleMessage/options_import_hashes]", request);
+    // sanity check
+    if (Array.isArray(request.files) && request.files.length > 0) {
+      loadHashURLList(request.files);
+    } else {
+      console.debug("[bg/handleMessage/options_import_hashes] files is not an array or empty");
+    }
+    return new Promise(resolve => resolve({response: "ok"}));
+    break;
+  ////////////////////////////////////
   case "page_add_hashes":
     console.debug("[bg/handleMessage/page_add_hashes]", request);
     return new Promise(resolve => resolve({response: "not implemented"}));
@@ -172,7 +231,7 @@ async function handleMessage(request, sender, sendResponse) {
 // load hashes from WARs to db
 // TODO move to function
 db.on('populate', () => {
-	console.log("[bg] db is empty, populating with WARs");
+  console.log("[bg] db is empty, populating with WARs");
 });
 
 console.log("[bg] list of WARs to process:", manifest.web_accessible_resources);
@@ -199,6 +258,7 @@ for (const hashes_list_entry of hashes_list) {
     if(entry != null) {
       console.log("[bg] xxx3");
       entry.last_updated = (new Date(entry.last_updated)).toJSON();
+      entry.imported = (new Date()).toJSON();
       console.log("[bg]", entry.last_updated);
 
       // add entry to db. dupes are allowed here, but to what extent?
@@ -230,8 +290,8 @@ browser.runtime.onMessage.addListener(handleMessage);
 // debugging messages
 //console.debug(await db.good.toArray());
 let openPreferencesPage = browser.tabs.create({
-														url: browser.runtime.getURL("options.html")
-													});
+                            url: browser.runtime.getURL("options.html")
+                          });
 openPreferencesPage.then(tab => { console.log("[bg] opened", tab.id) }, onError);
 
 // test module import

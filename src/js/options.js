@@ -11,6 +11,7 @@ const manifest = browser.runtime.getManifest();
 const storage = browser.storage.local;
 
 // function defs ///////////////////////////////////////////////////////
+function onError(error) { console.error("[options]", `${error}`); }
 
 /* no longer supported in FF:
  * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/getBytesInUse
@@ -51,6 +52,80 @@ async function exportHashes(id) {
     // TODO select one or more rows by id, and export
   }
 }
+
+// function defs for UI elements ///////////////////////////////////////
+function handleFilePicker() {
+  importFiles(this.files);
+}
+
+function drop(e) {
+  e.stopPropagation();
+  e.preventDefault();
+  importFiles(e.dataTransfer.files);
+}
+
+// ignore drag enter/over events
+// TODO UX: change div background on dragover
+function dragenter(e) { e.stopPropagation(); e.preventDefault(); }
+function dragover(e) { e.stopPropagation(); e.preventDefault(); }
+
+// TODO work-in-progress
+async function updateDisplaySites() {
+  const result = await db.good.toArray();
+  console.log(result);
+
+  let displayText = "<ul>";
+  for(const entry of result) {
+    let entryText = "<li>";
+    entryText += entry.id + "\t" + entry.domain + "\t" + entry.last_updated;
+    entryText += "</li>";
+
+    displayText += entryText;
+  }
+  displayText += "</ul>";
+
+  const sites = document.getElementById('sites');
+  sites.innerHTML = displayText;
+}
+
+// back-end functions for UI elements
+async function importFiles(fileList) {
+  if (fileList == null) {
+    console.log("[options/importFiles] fileList is null, returning");
+    return;
+  }
+  console.debug("[options/importFiles]", fileList);
+
+  // build object URLs to send to background script
+  // XXX do we validate here or in bg?
+  let fileListURLs = [];
+  let fileListNames = [];
+  for (let i=0; i<fileList.length; i++) {
+    const objectURL = window.URL.createObjectURL(fileList[i]);
+    fileListURLs.push(objectURL);
+    fileListNames.push(fileList[i].name);
+  }
+  console.debug("[options/importFiles] fileListURL =", fileListURLs);
+
+  // send file URLs to background script for processing
+  var msgSendImport = browser.runtime.sendMessage({
+                      action: 'options_import_hashes',
+                      files: fileListURLs
+                    });
+
+  // process response or display error message (`importFileStatus`)
+  msgSendImport.then( async msgResp => {
+    console.log("[options/importFiles] response from background:", msgResp.response);
+
+    const importFileStatus = document.getElementById('importFileStatus');
+    importFileStatus.innerText = `Files ${JSON.stringify(fileListNames)} successfully imported!`;
+
+    // refresh page (or dynamically update list of hashes)
+    await updateDisplaySites();
+  }, onError);
+
+  return;
+}
 ////////////////////////////////////////////////////////////////////////
 
 // entry point /////////////////////////////////////////////////////////
@@ -64,5 +139,14 @@ console.assert("lorem ipsum" == testExportText, { textExportText: testExportText
 document.getElementById('exportAllHashes')
         .addEventListener('click', () => exportHashes(null), false);
 
+document.getElementById('importFilePicker')
+        .addEventListener('change', handleFilePicker, false);
+
+const inputFileZone = document.getElementById('importFileZone');
+inputFileZone.addEventListener("dragenter", dragenter, false);
+inputFileZone.addEventListener("dragover", dragover, false);
+inputFileZone.addEventListener("drop", drop, false);
+
+await updateDisplaySites();
 ////////////////////////////////////////////////////////////////////////
 })();
