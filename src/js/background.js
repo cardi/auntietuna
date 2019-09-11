@@ -55,36 +55,31 @@ async function loadHashURL(url) {
 async function loadHashURLList(urls) {
   // TODO better error handling
   for (let i=0; i<urls.length; i++) {
-    // from: onPopulate
-    // TODO migrate to this fxn instead
-    console.log("%c------------------------------------------------------------------------",
-      "color:green;");
+    console.log("%c------------------------------------ ", "color:green;");
 
     let hashes_url = urls[i];
 
-    console.log("[bg] xxx1:", hashes_url);
+    console.debug("[bg/loadHashURLList] processing URL:", hashes_url);
     let entry = await loadHashURL(hashes_url);
-    console.log("[bg] xxx2:", entry);
+    console.log("[bg/loadHashURLList] entry from URL:", entry);
 
     // TODO validate entry: { domain: , last_updated: , hashes: }
     if(entry != null) {
-      console.log("[bg] xxx3");
       entry.last_updated = (new Date(entry.last_updated)).toJSON();
       entry.imported = (new Date()).toJSON();
-      console.log("[bg]", entry.last_updated);
 
       // add entry to db. dupes are allowed here, but to what extent?
       await db.good.add(entry);
 
       // add domain to whitelist
       storage.get("whitelist").then( items => {
-        console.debug("[bg] whitelist:", items["whitelist"]);
+        console.debug("[bg] whitelist [1]:", items["whitelist"]);
 
         if (items['whitelist'] == null) { items['whitelist'] = []; }
         if (items['whitelist'].constructor === Array) {
           items['whitelist'] = (items['whitelist'].concat(entry.domain)).filter(util.unique);
           storage.set(items).then( () => {
-            console.log("[bg] success:", items['whitelist']);
+            console.debug("[bg] whitelist [2]:", items['whitelist']);
           }, onError);
         }
       }, onError);
@@ -196,7 +191,7 @@ async function handleMessage(request, sender, sendResponse) {
     console.log("[bg/handleMessage/options_import_hashes]", request);
     // sanity check
     if (Array.isArray(request.files) && request.files.length > 0) {
-      loadHashURLList(request.files);
+      await loadHashURLList(request.files);
     } else {
       console.debug("[bg/handleMessage/options_import_hashes] files is not an array or empty");
     }
@@ -228,61 +223,25 @@ async function handleMessage(request, sender, sendResponse) {
 
 // entry point /////////////////////////////////////////////////////////
 
-// load hashes from WARs to db
-// TODO move to function
+// if db is entry, load hashes from WARs to db
 db.on('populate', () => {
   console.log("[bg] db is empty, populating with WARs");
-});
+  console.log("[bg] list of WARs to process:", manifest.web_accessible_resources);
 
-console.log("[bg] list of WARs to process:", manifest.web_accessible_resources);
-
-let hashes_list = manifest.web_accessible_resources;
-let num_hashes = hashes_list.length;
-
-for (const hashes_list_entry of hashes_list) {
-  console.log("%c------------------------------------------------------------------------",
-    "color:green;");
-  console.log("[bg] processing:", hashes_list_entry);
-
-  let hashes_url = browser.runtime.getURL(hashes_list_entry);
-
-  console.log("[bg] getURL:", hashes_url);
-
-  if (/(.json)$/.test(hashes_url)) {
-
-    console.log("[bg] xxx1:", hashes_url);
-    let entry = await loadHashURL(hashes_url);
-    console.log("[bg] xxx2:", entry);
-
-    // TODO validate entry: { domain: , last_updated: , hashes: }
-    if(entry != null) {
-      console.log("[bg] xxx3");
-      entry.last_updated = (new Date(entry.last_updated)).toJSON();
-      entry.imported = (new Date()).toJSON();
-      console.log("[bg]", entry.last_updated);
-
-      // add entry to db. dupes are allowed here, but to what extent?
-      await db.good.add(entry);
-
-      // add domain to whitelist
-      storage.get("whitelist").then( items => {
-        console.debug("[bg] whitelist:", items["whitelist"]);
-
-        if (items['whitelist'] == null) { items['whitelist'] = []; }
-        if (items['whitelist'].constructor === Array) {
-          items['whitelist'] = (items['whitelist'].concat(entry.domain)).filter(util.unique);
-          storage.set(items).then( () => {
-            console.log("[bg] success:", items['whitelist']);
-          }, onError);
-        }
-      }, onError);
+  let hashes_list = [];
+  for (const hashes_list_entry of manifest.web_accessible_resources) {
+    let hashes_url = browser.runtime.getURL(hashes_list_entry);
+    if (/(.json)$/.test(hashes_url)) {
+      hashes_list.push(hashes_url);
     } else {
-      // we didn't load anything, so move on
+      console.log("[bg] ignoring processing:", hashes_list_entry);
     }
-  } else {
-    console.log("[bg] ignoring processing:", hashes_list_entry);
   }
-} // end for(hashes_list_entry in hashes_list)
+
+  if (hashes_list.length > 0) {
+    loadHashURLList(hashes_list);
+  }
+});
 
 // add listener for getting messages from tabs or popup
 browser.runtime.onMessage.addListener(handleMessage);

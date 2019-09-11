@@ -22,11 +22,6 @@ function update_storage_used() {
   t.textContent = 'Storage used: ' + bytes + ' bytes.';
 }//*/
 
-function update_status(txt) {
-  var status = document.getElementById('status');
-  status.textContent = txt;
-}
-
 // TODO `id` should be an array of ints
 async function exportHashes(id) {
   if (id == null) {
@@ -53,6 +48,12 @@ async function exportHashes(id) {
   }
 }
 
+async function resetHashes() {
+  await db.good.clear();
+  updateDisplayStatus("database cleared!");
+  await updateDisplaySites();
+}
+
 // function defs for UI elements ///////////////////////////////////////
 function handleFilePicker() {
   importFiles(this.files);
@@ -72,7 +73,7 @@ function dragover(e) { e.stopPropagation(); e.preventDefault(); }
 // TODO work-in-progress
 async function updateDisplaySites() {
   const result = await db.good.toArray();
-  console.log(result);
+  console.debug("[options/updateDisplaySites]", result);
 
   let displayText = "<ul>";
   for(const entry of result) {
@@ -86,6 +87,38 @@ async function updateDisplaySites() {
 
   const sites = document.getElementById('sites');
   sites.innerHTML = displayText;
+}
+
+function updateDisplayStatus(txt) {
+  document.getElementById('status').textContent = txt;
+}
+
+function loadDefaultHashes() {
+  let hashes_list = [];
+  for (const hashes_list_entry of manifest.web_accessible_resources) {
+    let hashes_url = browser.runtime.getURL(hashes_list_entry);
+    if (/(.json)$/.test(hashes_url)) {
+      hashes_list.push(hashes_url);
+    } else {
+      console.log("[options/loadDefaultHashes] ignoring processing:", hashes_list_entry);
+    }
+  }
+
+  if (hashes_list.length > 0) {
+    // send file URLs to background script for processing
+    var msgSendImport = browser.runtime.sendMessage({
+                        action: 'options_import_hashes',
+                        files: hashes_list
+                      });
+
+    // process response or display error message (`importFileStatus`)
+    msgSendImport.then( async msgResp => {
+      console.log("[options/loadDefaultHashes] response from background:", msgResp.response);
+
+      updateDisplayStatus(`Files ${JSON.stringify(manifest.web_accessible_resources)} successfully imported!`);
+      await updateDisplaySites();
+    }, onError);
+  }
 }
 
 // back-end functions for UI elements
@@ -147,6 +180,13 @@ inputFileZone.addEventListener("dragenter", dragenter, false);
 inputFileZone.addEventListener("dragover", dragover, false);
 inputFileZone.addEventListener("drop", drop, false);
 
+document.getElementById('resetHashes')
+        .addEventListener('click', () => resetHashes(), false);
+
+document.getElementById('loadDefaultHashes')
+        .addEventListener('click', () => loadDefaultHashes(), false);
+
+// update options page with list of hashes inside db and we're done
 await updateDisplaySites();
 ////////////////////////////////////////////////////////////////////////
 })();
