@@ -50,7 +50,7 @@ async function exportHashes(id) {
 
 async function resetHashes() {
   await db.good.clear();
-  updateDisplayStatus("database cleared!");
+  updateDisplayStatus("Database cleared!");
   await updateDisplaySites();
 }
 
