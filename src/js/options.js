@@ -13,15 +13,6 @@ const storage = browser.storage.local;
 // function defs ///////////////////////////////////////////////////////
 function onError(error) { console.error("[options]", `${error}`); }
 
-/* no longer supported in FF:
- * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/getBytesInUse
- *//*
-function update_storage_used() {
-  let bytes = storage.getBytesInUse(null);
-  let t = document.getElementById('storageUsed');
-  t.textContent = 'Storage used: ' + bytes + ' bytes.';
-}//*/
-
 // TODO `id` should be an array of ints
 async function exportHashes(id) {
   if (id == null) {
