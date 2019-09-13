@@ -78,8 +78,10 @@ async function updateDisplaySites() {
   let displayText = "<ul>";
   for(const entry of result) {
     let entryText = "<li>";
-    entryText += entry.id + "\t" + entry.domain + "\t" + entry.last_updated;
-    entryText += "</li>";
+    entryText += '<label><input type="checkbox" style="margin-right: 0.5em">'
+    entryText += entry.domain + "\t(id: " + entry.id + ", last updated: " + entry.last_updated;
+    entryText += ", imported on: " + entry.imported + ")";
+    entryText += "</label></li>";
 
     displayText += entryText;
   }

@@ -146,6 +146,23 @@ button:hover {
 	width: 140px;
 }
 
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+input[type=checkbox] {
+  position: relative;
+  vertical-align: text-bottom;
+  transform: scale(1.25);/**/
+  bottom: 1px;
+}
+
 /*#reset, #loadDefault {
 	font-family: sans-serif;
 	width: 100px;
