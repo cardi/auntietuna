@@ -223,24 +223,30 @@ async function handleMessage(request, sender, sendResponse) {
 
 // entry point /////////////////////////////////////////////////////////
 
-// if db is entry, load hashes from WARs to db
-db.on('populate', () => {
-  console.log("[bg] db is empty, populating with WARs");
-  console.log("[bg] list of WARs to process:", manifest.web_accessible_resources);
-
-  let hashes_list = [];
-  for (const hashes_list_entry of manifest.web_accessible_resources) {
-    let hashes_url = browser.runtime.getURL(hashes_list_entry);
-    if (/(.json)$/.test(hashes_url)) {
-      hashes_list.push(hashes_url);
+// if db is empty, load hashes from WARs to db
+db.on('ready', () => {
+  return db.good.count( (count) => {
+    if (count > 0) {
+      console.log("[bg] db already has count of", count);
     } else {
-      console.log("[bg] ignoring processing:", hashes_list_entry);
-    }
-  }
+      console.log("[bg] db is empty, populating with WARs");
+      console.log("[bg] list of WARs to process:", manifest.web_accessible_resources);
 
-  if (hashes_list.length > 0) {
-    loadHashURLList(hashes_list);
-  }
+      let hashes_list = [];
+      for (const hashes_list_entry of manifest.web_accessible_resources) {
+        let hashes_url = browser.runtime.getURL(hashes_list_entry);
+        if (/(.json)$/.test(hashes_url)) {
+          hashes_list.push(hashes_url);
+        } else {
+          console.log("[bg] ignoring processing:", hashes_list_entry);
+        }
+      }
+
+      if (hashes_list.length > 0) {
+        loadHashURLList(hashes_list);
+      }
+    }
+  });
 });
 
 // add listener for getting messages from tabs or popup
