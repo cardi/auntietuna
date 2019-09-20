@@ -19,8 +19,14 @@ online:
 Additional information and a copy of this software its source code can
 also be found at <https://ant.isi.edu/software/antiphish>.
 
-Please send email to <calvin@isi.edu> with questions, bugs, feature
-requests, patches, and any notes on your usage.
+## contributing
+
+Contributions are welcome!
+
+Feel free to open a [pull request](https://github.com/cardi/auntietuna/pulls)
+or an [issue](https://github.com/cardi/auntietuna/issues), or send email
+to <calvin@isi.edu> with questions, bugs, feature requests, patches, and
+any notes on your usage.
 
 ## installation
 
@@ -38,8 +44,8 @@ On a website you normally log in to, click on the shield icon and
 The extension now checks, behind the scenes, if every visited webpage is
 phish or not. If it is, you'll be prevented from clicking through.
 
-NOTE: Software is in ALPHA stage! There *might* be false positives and/or
-broken websites. Please send feedback to <calvin@isi.edu>.
+**NOTE**: Software is in ALPHA stage! There *might* be false positives
+and/or broken websites. Please send feedback to <calvin@isi.edu>.
 
 ## libraries used
 
