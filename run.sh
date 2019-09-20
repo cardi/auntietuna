@@ -10,7 +10,7 @@ FIREFOX_BIN="$HOME/Applications/Firefox Developer Edition.app/Contents/MacOS/fir
 FIREFOX_DIST="$HOME/Applications/Firefox Developer Edition.app/Contents/Resources/distribution"
 
  OPTS=()
- OPTS+=(--browser-console)                                 # open a browser console
+#OPTS+=(--browser-console)                                 # open a browser console
  OPTS+=(--start-url www.mozilla.org)                       # open this tab on start
  OPTS+=(--verbose)                                         # verbose output for web-ext
 #OPTS+=(--keep-profile-changes)                            # persist profile across runs
