@@ -11,13 +11,11 @@ const DebugOptions = {
   "Verbose"            : 1 << 2,
 }
 
-
 // global variables
 let storage = browser.storage.local,
 		runMode = -1,
     shouldCrawl = 0,
     shouldRun = -1,
-    whitelisted_domains = [],
     debug = DebugOptions.None;
 
 // set debug options
@@ -32,8 +30,19 @@ function onError(error) {
 function onGetWhitelist(items) {
   console.info("[cs/onGetWhitelist] document domain:", document.domain);
 
-  whitelisted_domains = items['whitelist'];
-  console.info("[cs/onGetWhitelist] whitelist: ", `${whitelisted_domains}`);
+  // sometimes we have nothing loaded in db (and thus no whitelist)
+  if (typeof items === 'undefined'
+        || items === null
+        || !("whitelist" in items))
+  {
+    console.info("[cs/onGetWhitelist] whitelist doesn't exist => running checks");
+		runMode = 1;
+    shouldRun = 1;
+    return;
+  }
+
+  let whitelisted_domains = items['whitelist'];
+  console.info("[cs/onGetWhitelist] whitelist:", `${whitelisted_domains}`);
 
   // whitelisting needs to be done carefully: phish will have
   // "paypal.com" as a subdomain to trick users
