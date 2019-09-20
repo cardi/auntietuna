@@ -305,6 +305,35 @@ case  1: // run detection
           // TODO
         }, onError);
       }
+
+      // DEBUG: since we're in alpha, inject a DIV with debugging
+      // information to sort out false positives
+
+      // TODO reset CSS and style it ourselves via
+      // https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM
+      let debugInfoHTML =
+        `AuntieTuna thinks this site is a phishing site. It's possible
+        that it isn't a phishing site. If it isn't, could you copy and
+        paste the following text and submit it to
+        <a href="https://auntietuna.ant.isi.edu">AuntieTuna's home
+        page</a>? Thank you!
+        <pre style="max-height: 200px; overflow-y: scroll;">${JSON.stringify(data)}</pre>`;
+
+      let debugInfoDiv = document.createElement("div");
+      debugInfoDiv.style.height = "350px";
+      debugInfoDiv.style.background = "grey";
+      debugInfoDiv.style.color = "white";
+      debugInfoDiv.style.position = "fixed";
+      debugInfoDiv.style.bottom = "0";
+      debugInfoDiv.style.left = "50%";
+      debugInfoDiv.style.width = "75%";
+      debugInfoDiv.style.padding = "1em 1em";
+      debugInfoDiv.style.transform = "translate(-50%, -50%)";
+      debugInfoDiv.style.zIndex = "9999";
+      debugInfoDiv.innerHTML = debugInfoHTML;
+
+      //document.body.appendChild(debugInfoDiv);
+      document.body.insertBefore(debugInfoDiv, document.body.firstChild);
     } else {
       console.log("[cs/1] site is not suspected phish");
     }
