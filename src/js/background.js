@@ -69,7 +69,10 @@ async function loadHashURLList(urls) {
       entry.imported = (new Date()).toJSON();
 
       // add entry to db. dupes are allowed here, but to what extent?
-      await db.good.add(entry);
+      await db.good.add(entry).catch((error) => {
+        console.error("error in adding:", error);
+        return Promise.reject(error);
+      });
 
       // add domain to whitelist
       storage.get("whitelist").then( items => {
@@ -135,23 +138,23 @@ async function handleMessage(request, sender, sendResponse) {
 
       matches.push(matchesEntry);
     }
-    console.debug("xxx:", matches);
+    console.debug("[bg/handleMessage/check_hashes] matches:", matches);
 
     let numberSubmittedHashes = request.hashes.length;
 
     // find how many total distinct matches across the hashes of all known good entries
     let allHashes = result.map(entry => entry.hashes);
     let mergedAllHashes = [].concat.apply([], allHashes);
-    console.debug("xxx2:", mergedAllHashes);
+    console.debug("[bg/handleMessage/check_hashes] mergedAllHashes:", mergedAllHashes);
     const intersection = request.hashes.filter(value => mergedAllHashes.includes(value));
     let numberMatchedHashes = intersection.length;
-    console.debug("xxx3:", numberMatchedHashes);
+    console.debug("[bg/handleMessage/check_hashes] numberMatchedHashes:", numberMatchedHashes);
 
     let uniqueDomains = new Set(result.map(entry => entry.domain));
-    console.debug("uniqueDomains:", uniqueDomains);
+    console.debug("[bg/handleMessage/check_hashes] uniqueDomains:", uniqueDomains);
 
     let numberMatchedDomains = uniqueDomains.size;
-    console.debug("numberMatchedDomains:", numberMatchedDomains);
+    console.debug("[bg/handleMessage/check_hashes] numberMatchedDomains:", numberMatchedDomains);
 
     //  for each hash:
     //    what domains (+dates?) does it show up in?
