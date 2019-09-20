@@ -174,6 +174,43 @@ function hashEverythingAndReturn(content) {
   return chunkAndHash(re_pdiv, content);
 }
 
+// handles messages from popup
+async function handleMessage(request, sender, sendResponse) {
+  // who are we getting the message from?
+  if (sender.tab != null) {
+    console.log("[cs/handleMessage] request from tab", sender.tab.id, ":", request.action);
+  } else {
+    console.log("[cs/handleMessage] request:", request.action);
+  }
+
+  switch(request.action) {
+  case "log":
+    console.log("[cs/handleMessage/log]", request.msg);
+    return new Promise(resolve => resolve({response: "ok"}));
+    break;
+  ////////////////////////////////////
+  case "request_dom":
+    console.log("[cs/handleMessage/requestDom] processing");
+
+    var dom = getCleanedDomHtml();
+    var dom_hashes = hashEverythingAndReturn(dom);
+
+    const dom_data = {
+      response     : "ok",
+      domain       : document.domain,
+      last_updated : Date.now(),
+      hashes       : dom_hashes
+    };
+
+    return new Promise(resolve => resolve(dom_data));
+    break;
+  ////////////////////////////////////
+  default:
+    console.log("[cs/handleMessage] received unknown action:", request.action);
+    return new Promise(resolve => resolve({response: ""}));
+    break;
+  }
+}
 ////////////////////////////////////////////////////////////////////////
 
 /*
@@ -314,4 +351,7 @@ default:
 }
 // end main routine
 	}, onError);
+
+// add listener for getting messages from popup
+browser.runtime.onMessage.addListener(handleMessage);
 ////////////////////////////////////////////////////////////////////////
