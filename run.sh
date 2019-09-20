@@ -17,6 +17,7 @@ FIREFOX_DIST="$HOME/Applications/Firefox Developer Edition.app/Contents/Resource
  OPTS+=(--pref devtools.webconsole.timestampMessages=true) # timestamp messages in console
  OPTS+=(--start-url about:debugging#/runtime/this-firefox) # open debugging tab
  OPTS+=(--pref='datareporting.policy.firstRunURL=')        # don't load privacy page
+ OPTS+=(--pref='ui.popup.disable_autohide=true')					 # popup.html debugging
 
  # disable telemetry
  OPTS+=(--pref='datareporting.healthreport.uploadEnabled=false')
