@@ -65,6 +65,16 @@ EOF
  OPTS+=(--pref='browser.aboutConfig.showWarning=false')
  OPTS+=(--pref='general.warnOnAboutConfig=false')
 
+# check if web-ext is installed
+if ! $(type web-ext >/dev/null 2>&1)
+then
+	echo "[error] 'web-ext' is not installed, install using your favorite package manager"
+	exit 1
+fi
+
+# TODO check if firefox is installed
+
+# run
 web-ext run \
   --source-dir="$PWD/src" \
   --firefox="${FIREFOX_BIN}" \
