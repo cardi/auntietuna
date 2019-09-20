@@ -30,11 +30,40 @@ any notes on your usage.
 
 ## installation
 
+There are multiple ways to install the AuntieTuna browser extension via
+sideloading.
+
+[Information about the requested permissions](#TODO).
+
+### firefox
+
+**TODO** instructions will differ on stable, beta, nightly, developer
+
+### chrome / chromium
+
+**TODO**
+
 1. Go to Extensions (Window -> Extensions) or "chrome://extensions"
 2. Click on "Load unpacked extensions..."
 3. Select the directory containing this extension and click on "Select"
 4. To view debugging information for the extension on a visited webpage,
    go to View -> Developer -> JavaScript Console
+
+### development (firefox)
+
+Running the development version will launch Firefox with a clean,
+temporary profile with AuntieTuna pre-installed that is independent of
+existing profiles you may have.
+
+Data is ***not saved*** after you close Firefox! (You can uncomment the
+line containing `--keep-profile-changes` if you want a persistent
+profile.)
+
+1. Install Mozilla Firefox
+2. Install `web-ext`
+3. Clone this repository: `git clone https://github.com/cardi/auntietuna.git`
+4. (optional) In `run.sh`, modify the paths to `FIREFOX_BIN` and `FIREFOX_DIST`
+5. Execute `run.sh`
 
 ## usage
 
