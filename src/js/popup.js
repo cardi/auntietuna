@@ -1,130 +1,127 @@
-function getCurrentTab(callback) {
-  var queryInfo = {
+/* SPDX-License-Identifier: GPL-3.0-or-later */
+
+'use strict';
+
+(async function(){
+
+async function getCurrentTab() {
+  const queryInfo = {
     active: true,
     currentWindow: true
   };
 
-  chrome.tabs.query(queryInfo, function(tabs) {
-    var tab = tabs[0];
-    console.assert(typeof tab.url == 'string', 'tab.url should be a string');
-    callback(tab);
+  let tabs = await browser.tabs.query(queryInfo);
+  let tab = tabs[0];
+  console.assert(typeof tab.url == 'string', 'tab.url should be a string');
+
+  //console.debug("tab", tab);
+
+  return tab;
+}
+
+function sendBgMessage(message) {
+  let msg = browser.runtime.sendMessage({
+      action: 'log',
+      msg: message
+  });
+
+  msg.then( response => {
+    console.log("[popup/sendBgMessage] response:", response);
   });
 }
+
+async function downloadHashes(addToStorage) {
+  console.assert(typeof addToStorage == 'boolean', 'addToStorage should be a boolean');
+
+  if (addToStorage == false) {
+    renderStatus("downloading hashes.");
+  } else if (addToStorage == true) {
+    renderStatus("adding hashes and site to whitelist.");
+  }
+
+  // TODO do nothing if we're on special URLs (file:///, // moz-extension://, etc)
+  let tab = await getCurrentTab();
+  if (typeof tab === 'undefined' || tab === null) {
+    return;
+  }
+
+  sendBgMessage("from: " + tab.id + " url: " + tab.url);
+  console.log('[popup/download] current tab id is', tab.id);
+
+  // DEBUG: sent a test message to tab:contentscript
+  let testMsg = browser.tabs.sendMessage(tab.id,
+    { action: 'log', msg: 'hello from ' + document.location.href }
+  );
+  testMsg.then( (resp) => {
+    console.log("[popup/testmsg] sent hello, got back:", resp.response);
+  })
+
+  // send a request for the page's hashes to tab:content script
+  let domRequestMsg = browser.tabs.sendMessage(tab.id,
+    { action: 'request_dom' });
+  domRequestMsg.then( (resp) => {
+    let data = {
+      domain       : resp.domain,
+      last_updated : (new Date(resp.last_updated)).toJSON(),
+      hashes       : resp.hashes
+    }
+    console.log("[popup/domRequest] returned data:", data);
+
+    // build json blob for saving
+    let blob = new Blob([JSON.stringify(data)], {type: "application/json;charset=utf-8"});
+
+    // build filename
+    let date = new Date();
+    let url = window.URL.createObjectURL(blob);
+    let name = `hashes-${date.toJSON()}.json`;
+
+    console.log("[popup/exportHashes]", "filename:", name, "url:", url);
+
+    if (addToStorage == false) {
+      // download blob: use FileSaver to save file
+      saveAs(blob, name);
+    } else {
+      // send blob URL to background to be added
+      var msgSendImport = browser.runtime.sendMessage({
+                          action: 'options_import_hashes',
+                          files: [url]
+                        });
+
+      // process response
+      msgSendImport.then( msgResp => {
+        console.log("[popup/msgSendImport] response from background:", msgResp.response);
+        renderStatus("page added.");
+      });
+    }
+  });
+
+  return;
+}
+
+////////////////////////////////////////////////////////////////////////
+// function defs for UI elements ///////////////////////////////////////
 
 function renderStatus(statusText) {
   document.getElementById('status').textContent = statusText;
 }
 
-function sendBgMessage(message) {
-  chrome.runtime.sendMessage(
-    {
-      action: 'log',
-      msg: message
-    },
-    function(response) { }
-  );//*/
-}
+////////////////////////////////////////////////////////////////////////
+// entry point /////////////////////////////////////////////////////////
 
-// TODO this does not like file:///
-function downloadHashes(addToStorage) {
-  console.assert(typeof addToStorage == 'boolean', 'addToStorage should be a boolean');
+// add event listeners to popup.html
 
-  if (addToStorage == false) {
-    renderStatus("downloading hashes.");
-  } else if (addToStorage = true) {
-    renderStatus("adding hashes and site to whitelist.");
-  }
+// add button: adds hashed chunks to db, domain to whitelist
+document.getElementById('add')
+        .addEventListener('click', () => { downloadHashes(true); });
 
-  // get the current tab ID to send the right message to
-  getCurrentTab(function(tab) {
-    sendBgMessage("from: " + tab.id + " url: " + tab.url);
-    console.log('current tab id is ' + tab.id);
-    chrome.tabs.sendMessage(
-      tab.id,
-      { action: 'log', msg: 'hello from ' + document.location.href },
-      function(response) { console.log("sent hello, got back: " + response.msg); }
-    );
+// download button: downloads .json of hashed chunks of active page
+document.getElementById('download')
+        .addEventListener('click', () => { downloadHashes(false) });
 
-    // send request for the DOM
-    chrome.tabs.sendMessage(
-      tab.id,
-      { action: 'request_dom' },
-      function(response) {
-        console.log('response> ' + response);
-        if(response.lastError) {
-          console.log('error> ' + response.lastError);
-        } else {
-          // we're successful and we have the hashes
-          console.log('msg> ' + response.msg);
+// options button: open `options.html` in a new tab (instead of new window)
+document.getElementById('options')
+        .addEventListener('click', () => { browser.tabs.create({url: "options.html"}); });
 
-          var data = {
-            domain: response.domain,
-            last_updated: (new Date(response.last_updated)).toJSON(),
-            hashes: response.hashes
-          }
-          console.log(data);
-          //changed so that it can work when importing many sites
-          var arrayData = "[" + JSON.stringify(data) + "]";
-
-          var blob = new Blob([arrayData],
-                              {type: "application/json;charset=utf-8"});
-
-          if(addToStorage == false) {
-            // now package it up and download it to a file
-            var fn_results = "hashes." + data.domain + "." + data.last_updated + ".json";
-            sendBgMessage("saving hashes to " + fn_results);
-            // FileSaver saveAs(Blob data, DOMString filename, optional Boolean disableAutoBOM)
-            saveAs(blob, fn_results, true); // don't want BOM (byte order mark)
-            renderStatus("hashes downloaded.");
-          }
-          else if(addToStorage == true) {
-            // we want to add this to our indexedDB
-
-            // provide the option to have it downloaded, if needed:
-            var url = window.URL.createObjectURL(blob);
-            //sendBgMessage("blob url: " + url);
-
-            // test that we can download text
-            var a = document.createElement("a");
-            var b = document.createTextNode("Download");
-            a.appendChild(b);
-            document.body.appendChild(a);
-            a.href = url;
-            a.download = "hashes." + data.domain + "." + data.last_updated + ".json";
-
-            // TODO once clicked, tear down URL?
-            //window.URL.revokeObjectURL(url);
-
-            // now send the JSON to background.js to be added
-            // TODO inefficient--we could probably have the tab's content-script do this
-            data['action'] = 'page_add_hashes';
-            chrome.runtime.sendMessage(
-              data,
-              function(response) {
-                console.log("pb popup page_add_hashes > resp: " + response.msg);
-              });
-          } else {
-            // should never get here
-          }
-        }
-      });
-  });
-}
-
-// this is torn down and brought up each time the button is clicked.
-document.addEventListener('DOMContentLoaded', function() {
-  console.log("button> domcontent loaded");
-  sendBgMessage("button pressed.")
-  renderStatus("all systems go.");
-});
-
-// user clicks on "add" button
-// this adds the hashes of all chunks of the active page to localStorage
-// we need to have a way to backup all the hashes.
-document.getElementById('add').addEventListener('click', function() { downloadHashes(true); });
-
-// user clicks on "download" button
-// this downloads a plaintext copy of hashes of all chunks of the active page
-document.getElementById('dl').addEventListener('click', function() { downloadHashes(false); });
-
-document.getElementById('options').addEventListener('click', function(){window.open("options.html");});
+renderStatus("ok.");
+////////////////////////////////////////////////////////////////////////
+})();
