@@ -38,16 +38,6 @@ FIREFOX_DIST="$HOME/Applications/Firefox Developer Edition.app/Contents/Resource
  OPTS+=(--pref='app.update.staging.enabled=false')
  OPTS+=(--pref='app.update.unsupported.url=')
 
-# disable updates
-mkdir -p "${FIREFOX_DIST}"
-cat << EOF > "${FIREFOX_DIST}/policies.json"
-{
-  "policies": {
-    "DisableAppUpdate": true
-  }
-}
-EOF
-
  # disable pocket
  OPTS+=(--pref='extensions.pocket.enabled=false')
  OPTS+=(--pref='browser.newtabpage.activity-stream.section.highlights.includePocket=false')
@@ -68,14 +58,32 @@ EOF
 # check if web-ext is installed
 if ! $(type web-ext >/dev/null 2>&1)
 then
-	echo "[error] 'web-ext' is not installed, install using your favorite package manager"
+	echo "[run.sh] error: 'web-ext' is not installed, install using your favorite package manager"
 	exit 1
 fi
 
-# TODO check if firefox is installed
+# check if firefox is installed
+if [ -a "${FIREFOX_BIN}" ]; then
+	# disable updates using policies.json
+	mkdir -p "${FIREFOX_DIST}"
+	cat <<-EOF > "${FIREFOX_DIST}/policies.json"
+	{
+	  "policies": {
+	    "DisableAppUpdate": true
+	  }
+	}
+	EOF
 
-# run
-web-ext run \
-  --source-dir="$PWD/src" \
-  --firefox="${FIREFOX_BIN}" \
-  ${OPTS[@]}
+	# run
+	web-ext run \
+	  --source-dir="$PWD/src" \
+		--firefox="${FIREFOX_BIN}" \
+	  ${OPTS[@]}
+else
+	echo "[run.sh] firefox not found, running with default firefox"
+
+	# run
+	web-ext run \
+	  --source-dir="$PWD/src" \
+	  ${OPTS[@]}
+fi
