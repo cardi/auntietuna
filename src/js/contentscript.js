@@ -132,9 +132,12 @@ function chunkAndHash(regex, content) {
     var b = tuple[0];
     var e = tuple[1];
 
-    // only do this for chunk sizes >= 25 otherwise we will get
+    // only do this for chunk sizes >= 30 otherwise we will get
     // tons of false positives
-    if((e - b + 1) < 25) { return; }
+    if((e - b + 1) < 30) {
+      console.debug("[cs/chunkAndHash] skipping `" + content.substring(b,e) + "`");
+      return;
+    }
 
     var h = CryptoJS.SHA256( content.substring(b,e) );
 
