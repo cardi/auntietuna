@@ -313,17 +313,20 @@ case  1: // run detection
       debugInfoDiv.attachShadow({mode: 'open'}).innerHTML =
       ` <style>
           :host {
-            all: initial; /* 1st rule so subsequent properties are reset. */
-            display: block;
-            background: white;
+            all        : initial; /* 1st rule so subsequent properties are reset. */
+            display    : block;
+            background : white;
           }
 
           pre {
-            max-height: 200px;
-            overflow-y: scroll;
-            border: solid 1px #000000;
-            background: #eee;
-            padding: 1.00em 1.00em;
+            max-height  : 200px;
+            white-space : pre-wrap;
+            word-wrap   : break-word;
+            overflow-x  : auto;
+            overflow-y  : scroll;
+            border      : solid 1px #000000;
+            background  : #eee;
+            padding     : 1.00em 1.00em;
           }
         </style>
         <div style="text-align:center;">
