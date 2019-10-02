@@ -21,6 +21,7 @@ let storage = browser.storage.local,
 // set debug options
 debug = debug | DebugOptions.AlwaysRunDetection;
 debug = debug | DebugOptions.NoRedirectOnMatch;
+debug = debug | DebugOptions.Verbose;
 
 // function defs
 function onError(error) {
@@ -312,17 +313,33 @@ case  1: // run detection
       // TODO reset CSS and style it ourselves via
       // https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM
       let debugInfoHTML =
-        `AuntieTuna thinks this site is a phishing site. It's possible
-        that it isn't a phishing site. If it isn't, could you copy and
-        paste the following text and submit it to
-        <a href="https://auntietuna.ant.isi.edu">AuntieTuna's home
-        page</a>? Thank you!
-        <pre style="max-height: 200px; overflow-y: scroll;">${JSON.stringify(data)}</pre>`;
+        ``;
 
       let debugInfoDiv = document.createElement("div");
-      debugInfoDiv.style.height = "350px";
-      debugInfoDiv.style.background = "grey";
-      debugInfoDiv.style.color = "white";
+
+      debugInfoDiv.attachShadow({mode: 'open'}).innerHTML =
+      ` <style>
+          :host {
+            all: initial; /* 1st rule so subsequent properties are reset. */
+            display: block;
+            background: white;
+          }
+        </style>
+        <div style="text-align:center;">
+        <h3>AuntieTuna thinks this site is a phishing site.</h3>
+        </div>
+        <p>It's possible that it isn't a phishing site. If it isn't,
+        could you copy and paste the following text and submit it to
+        <a href="https://auntietuna.ant.isi.edu">AuntieTuna's home page</a>?
+        Thank you!
+        <pre style="max-height: 200px; overflow-y: scroll;">${JSON.stringify(data)}
+        </pre>
+        </p>
+      `;
+
+      debugInfoDiv.style.height = "200px";
+      //debugInfoDiv.style.background = "grey";
+      //debugInfoDiv.style.color = "white";
       debugInfoDiv.style.position = "fixed";
       debugInfoDiv.style.bottom = "0";
       debugInfoDiv.style.left = "50%";
@@ -330,7 +347,7 @@ case  1: // run detection
       debugInfoDiv.style.padding = "1em 1em";
       debugInfoDiv.style.transform = "translate(-50%, -50%)";
       debugInfoDiv.style.zIndex = "9999";
-      debugInfoDiv.innerHTML = debugInfoHTML;
+      //debugInfoDiv.innerHTML = debugInfoHTML;
 
       //document.body.appendChild(debugInfoDiv);
       document.body.insertBefore(debugInfoDiv, document.body.firstChild);
