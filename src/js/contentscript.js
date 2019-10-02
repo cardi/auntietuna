@@ -350,6 +350,7 @@ case  1: // run detection
       debugInfoDiv.style.padding   = "1em 1em";
       debugInfoDiv.style.transform = "translate(-50%, -50%)";
       debugInfoDiv.style.zIndex    = "9999";
+      debugInfoDiv.style.border    = "solid 3px black";
 
       document.body.insertBefore(debugInfoDiv, document.body.firstChild);
     } else {
