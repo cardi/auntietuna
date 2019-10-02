@@ -309,20 +309,21 @@ case  1: // run detection
 
       // DEBUG: since we're in alpha, inject a DIV with debugging
       // information to sort out false positives
-
-      // TODO reset CSS and style it ourselves via
-      // https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM
-      let debugInfoHTML =
-        ``;
-
       let debugInfoDiv = document.createElement("div");
-
       debugInfoDiv.attachShadow({mode: 'open'}).innerHTML =
       ` <style>
           :host {
             all: initial; /* 1st rule so subsequent properties are reset. */
             display: block;
             background: white;
+          }
+
+          pre {
+            max-height: 200px;
+            overflow-y: scroll;
+            border: solid 1px #000000;
+            background: #eee;
+            padding: 1.00em 1.00em;
           }
         </style>
         <div style="text-align:center;">
@@ -332,24 +333,18 @@ case  1: // run detection
         could you copy and paste the following text and submit it to
         <a href="https://auntietuna.ant.isi.edu">AuntieTuna's home page</a>?
         Thank you!
-        <pre style="max-height: 200px; overflow-y: scroll;">${JSON.stringify(data)}
-        </pre>
-        </p>
-      `;
+        <pre>${JSON.stringify(data)}</pre>
+        </p>`;
 
-      debugInfoDiv.style.height = "200px";
-      //debugInfoDiv.style.background = "grey";
-      //debugInfoDiv.style.color = "white";
-      debugInfoDiv.style.position = "fixed";
-      debugInfoDiv.style.bottom = "0";
-      debugInfoDiv.style.left = "50%";
-      debugInfoDiv.style.width = "75%";
-      debugInfoDiv.style.padding = "1em 1em";
+      debugInfoDiv.style.height    = "350px";
+      debugInfoDiv.style.position  = "fixed";
+      debugInfoDiv.style.bottom    = "0";
+      debugInfoDiv.style.left      = "50%";
+      debugInfoDiv.style.width     = "75%";
+      debugInfoDiv.style.padding   = "1em 1em";
       debugInfoDiv.style.transform = "translate(-50%, -50%)";
-      debugInfoDiv.style.zIndex = "9999";
-      //debugInfoDiv.innerHTML = debugInfoHTML;
+      debugInfoDiv.style.zIndex    = "9999";
 
-      //document.body.appendChild(debugInfoDiv);
       document.body.insertBefore(debugInfoDiv, document.body.firstChild);
     } else {
       console.log("[cs/1] site is not suspected phish");
