@@ -131,7 +131,7 @@ async function handleMessage(request, sender, sendResponse) {
         }
 
       // compute which hashes in `request.hashes` matched with `knownGoodEntry.hashes`
-     const intersection = entry.hashes.filter(value => request.hashes.includes(value));
+      const intersection = entry.hashes.filter(value => request.hashes.includes(value));
 
       matchesEntry.matchedHashes = intersection;
       matchesEntry.numMatches = intersection.length;
@@ -156,6 +156,12 @@ async function handleMessage(request, sender, sendResponse) {
     let numberMatchedDomains = uniqueDomains.size;
     console.debug("[bg/handleMessage/check_hashes] numberMatchedDomains:", numberMatchedDomains);
 
+    let domainsAndMatches = matches.reduce(function(map, obj) {
+      console.log(obj.matchedHashes);
+      map[obj.domain] = { "numMatches": obj.numMatches, "matchedHashes": obj.matchedHashes };
+      return map;
+    }, {});
+
     //  for each hash:
     //    what domains (+dates?) does it show up in?
     //      debug[hash] += domain+date (for our debugging purposes)
@@ -174,6 +180,7 @@ async function handleMessage(request, sender, sendResponse) {
         ,number_submitted_hashes : numberSubmittedHashes
         ,number_matched_hashes   : numberMatchedHashes
         ,number_matched_domains  : numberMatchedDomains
+        ,domains_and_matches     : domainsAndMatches
       };
     return new Promise(resolve => resolve(response));
     break;

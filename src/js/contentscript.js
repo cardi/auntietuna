@@ -282,12 +282,15 @@ case  1: // run detection
 
       console.log("[cs/1] site is suspected phish.");
 
+      let suggested = Object.keys(msgResp.domains_and_matches);
+
       var data = {
-        debugMode : debug,
-        visited   : document.domain,
-        matches   : msgResp.number_matched_hashes,
-        total     : msgResp.number_submitted_hashes,
-        suggested : "TODO"
+        debugMode           : debug,
+        visited             : document.domain,
+        matches             : msgResp.number_matched_hashes,
+        total               : msgResp.number_submitted_hashes,
+        suggested           : suggested,
+        domains_and_matches : msgResp.domains_and_matches
       };
 
       let redirectUrl = browser.runtime.getURL('blocked.html') +
