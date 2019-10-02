@@ -227,8 +227,8 @@ async function handleMessage(request, sender, sendResponse) {
 // entry point /////////////////////////////////////////////////////////
 
 // if db is empty, load hashes from WARs to db
-db.on('ready', () => {
-  return db.good.count( (count) => {
+db.on('ready', async () => {
+  return db.good.count( async (count) => {
     if (count > 0) {
       console.log("[bg] db already has count of", count);
     } else {
@@ -246,7 +246,7 @@ db.on('ready', () => {
       }
 
       if (hashes_list.length > 0) {
-        loadHashURLList(hashes_list);
+        await loadHashURLList(hashes_list);
       }
     }
   });
