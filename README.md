@@ -1,8 +1,8 @@
 # AuntieTuna
 
-AuntieTuna is a browser extension that checks if each visited page is a
-potential phishing website based on snapshots of known good websites
-that a user adds.
+**AuntieTuna** is a browser extension that checks if each visited page
+is a potential phishing website based on snapshots of known good
+websites that a user adds.
 
 For example, a user adds a snapshot of Bank of FooBar. The extension
 then checks every other page the user visits to see if it looks like
@@ -14,14 +14,18 @@ online:
 > Content-Based Phishing Detection**. *Proceedings of the NDSS Workshop
 > on Usable Security* (San Diego, California, USA, Feb. 2016).
 > ([BibTeX](https://ant.isi.edu/bib/Ardi16a.html),
-> [PDF](http://www.isi.edu/%7ejohnh/PAPERS/Ardi16a.pdf))
+> [PDF](https://www.isi.edu/%7ejohnh/PAPERS/Ardi16a.pdf))
 
 Additional information and a copy of this software its source code can
-also be found at <https://ant.isi.edu/software/antiphish>.
+also be found at <https://auntietuna.ant.isi.edu> or
+<https://github.com/cardi/auntietuna>.
 
 ## contributing
 
 Contributions are welcome!
+
+We need help with the following:
+* **TODO**
 
 Feel free to open a [pull request](https://github.com/cardi/auntietuna/pulls)
 or an [issue](https://github.com/cardi/auntietuna/issues), or send email
