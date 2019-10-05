@@ -18,6 +18,7 @@ FIREFOX_DIST="$HOME/Applications/Firefox Developer Edition.app/Contents/Resource
  OPTS+=(--start-url about:debugging#/runtime/this-firefox) # open debugging tab
  OPTS+=(--pref='datareporting.policy.firstRunURL=')        # don't load privacy page
  OPTS+=(--pref='ui.popup.disable_autohide=true')					 # popup.html debugging
+ OPTS+=(--pref='browser.ctrlTab.recentlyUsedOrder=false')  # disable thumbanils in tab switcher
 
  # disable telemetry
  OPTS+=(--pref='datareporting.healthreport.uploadEnabled=false')
