@@ -60,7 +60,8 @@ function drop(e) {
 function dragenter(e) { e.stopPropagation(); e.preventDefault(); }
 function dragover(e) { e.stopPropagation(); e.preventDefault(); }
 
-// TODO work-in-progress
+// XXX work-in-progress
+// TODO add link to each row to display hashes
 async function updateDisplaySites() {
   const result = await db.good.toArray();
   console.debug("[options/updateDisplaySites]", result);
@@ -187,5 +188,13 @@ document.getElementById('loadDefaultHashes')
 
 // update options page with list of hashes inside db and we're done
 await updateDisplaySites();
+
+// QoL: subscribe to changes in the db and update the page when possible.
+// note that dexie-observable.js needs to be imported on the producer
+// (i.e., background.js) and consumer side
+db.on('changes', function(changes) {
+  updateDisplaySites();
+});
+
 ////////////////////////////////////////////////////////////////////////
 })();
