@@ -10,7 +10,7 @@
 
   "browser_action": {
     "default_icon": {
-      "16": "img/shield-16.png",
+      "24": "img/shield-24.png",
       "32": "img/shield-32.png",
       "64": "img/shield-64.png"
     },
