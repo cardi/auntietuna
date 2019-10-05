@@ -19,9 +19,18 @@ let storage = browser.storage.local,
     debug = DebugOptions.None;
 
 // set debug options
-debug = debug | DebugOptions.AlwaysRunDetection;
-debug = debug | DebugOptions.NoRedirectOnMatch;
-debug = debug | DebugOptions.Verbose;
+storage.get("debug").then( (result) => {
+  if("debug" in result) {
+    console.debug("[cs/get] debug =", result.debug);
+    if(result.debug === true) {
+    debug = debug | DebugOptions.AlwaysRunDetection;
+    debug = debug | DebugOptions.NoRedirectOnMatch;
+    debug = debug | DebugOptions.Verbose;
+    }
+  } else {
+    console.debug("[cs/get] key 'debug' doesn't exist in result");
+  }
+}, onError);
 
 // function defs
 function onError(error) {
