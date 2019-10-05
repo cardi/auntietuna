@@ -40,16 +40,19 @@ section, footer {
 }
 
 table {
-	background-color: rgb(226, 226, 226) ;
 	margin-top: 20px;
-	width: 980px;
+	width: 100%;
 	border: 1px solid rgb(165, 165, 165);
 	margin-left: 20px;
 	font-family: Helvetica, sans-serif;
 	font-size: 18px;
 	padding: 0;
-	text-align: center;
+	text-align: left;
 	margin: 0px 20px;
+}
+
+table th {
+	background-color: rgb(226, 226, 226) ;
 }
 
 input, button {

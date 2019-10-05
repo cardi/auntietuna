@@ -65,17 +65,24 @@ async function updateDisplaySites() {
   const result = await db.good.toArray();
   console.debug("[options/updateDisplaySites]", result);
 
-  let displayText = "<ul>";
+  let displayText = "<table>";
+  displayText += "<tr>";
+  displayText += "<th>";
+  displayText += "<th>domain";
+  displayText += "<th>last updated";
+  displayText += "<th>imported on";
+  displayText += "</tr>";
   for(const entry of result) {
-    let entryText = "<li>";
-    entryText += '<label><input type="checkbox" style="margin-right: 0.5em">'
-    entryText += entry.domain + "\t(id: " + entry.id + ", last updated: " + entry.last_updated;
-    entryText += ", imported on: " + entry.imported + ")";
-    entryText += "</label></li>";
+    let entryText = "<tr>";
+    entryText += '<td><input type="checkbox" style="margin-right: 0.5em">' + entry.id
+    entryText += '<td>' + entry.domain;
+    entryText += '<td>' + entry.last_updated;
+    entryText += '<td>' + entry.imported;
+    entryText += "</tr>";
 
     displayText += entryText;
   }
-  displayText += "</ul>";
+  displayText += "</table>";
 
   const sites = document.getElementById('sites');
   sites.innerHTML = displayText;
