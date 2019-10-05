@@ -86,7 +86,10 @@ async function updateDisplaySites() {
   displayText += "</table>";
 
   const sites = document.getElementById('sites');
-  sites.innerHTML = displayText;
+  // remove the table
+  while (sites.firstChild) sites.removeChild(sites.firstChild);
+  // use insertAdjacentHTML in place of .innerHTML
+  sites.insertAdjacentHTML('afterbegin', displayText);
 }
 
 function updateDisplayStatus(txt) {
