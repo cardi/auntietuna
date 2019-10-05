@@ -186,6 +186,31 @@ document.getElementById('resetHashes')
 document.getElementById('loadDefaultHashes')
         .addEventListener('click', () => loadDefaultHashes(), false);
 
+// for enabling/disabling debug mode
+document.getElementById('debug')
+        .addEventListener('change', (e) => {
+          console.log("[options/debug] e.target.checked =", e.target.checked);
+          e.preventDefault();
+          storage.set({
+            debug: e.target.checked
+          });
+        }, false);
+
+function restoreOptions() {
+
+  function onError(error) {
+    console.log(`[options/restoreOptions] Error: ${error}`);
+  }
+
+  var getting = storage.get("debug");
+  getting.then( (result) => {
+    console.log(result);
+    document.getElementById('debug').value = result;
+  }, onError);
+}
+
+document.addEventListener("DOMContentLoaded", restoreOptions);
+
 // update options page with list of hashes inside db and we're done
 await updateDisplaySites();
 
