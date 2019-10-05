@@ -234,7 +234,7 @@ storage
 // main routine
 onGetWhitelist(items);
 
-if ( debug | DebugOptions.AlwaysRunDetection ) { runMode = 1; }
+if ( debug & DebugOptions.AlwaysRunDetection ) { runMode = 1; }
 
 switch ( runMode ) {
 case -1: // should never get here
