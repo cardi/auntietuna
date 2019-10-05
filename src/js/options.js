@@ -6,7 +6,6 @@ import {db, testExportText} from '/js/db.js';
 
 (async function(){
 
-//const db = new Dexie('auntietuna');
 const manifest = browser.runtime.getManifest();
 const storage = browser.storage.local;
 
