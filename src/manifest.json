@@ -9,7 +9,11 @@
   },
 
   "browser_action": {
-    "default_icon"  : "img/shield.png",
+    "default_icon": {
+      "16": "img/shield-16.png",
+      "32": "img/shield-32.png",
+      "64": "img/shield-64.png"
+    },
     "default_popup" : "popup.html",
     "default_title" : "AuntieTuna"
   },
@@ -31,6 +35,11 @@
       "all_frames" : true
     }
   ],
+
+  "icons": {
+    "48": "img/shield-48.png",
+    "96": "img/shield-96.png"
+  },
 
   "options_ui": {
     "page"          : "options.html",

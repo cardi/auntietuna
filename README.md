@@ -87,7 +87,7 @@ and/or broken websites. Please send feedback to <calvin@isi.edu>.
 | CryptoJS    | http://code.google.com/p/crypto-js       | `BSD-3-Clause` |
 | Dexie.js    | https://github.com/dfahlander/Dexie.js/  | `Apache-2.0`   |
 | FileSaver   | https://github.com/eligrey/FileSaver.js  | `MIT`          |
-| shield icon | http://firstsiteguide.com/free-icon-set/ | `CC0-1.0`      |
+| shield icon | https://github.com/feathericons/feather  | `MIT`          |
 
 ## copyright
 
