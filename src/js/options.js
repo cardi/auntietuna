@@ -75,7 +75,7 @@ async function updateDisplaySites() {
   displayText += "</tr>";
   for(const entry of result) {
     let entryText = "<tr>";
-    entryText += '<td><input type="checkbox" style="margin-right: 0.5em">' + entry.id
+    entryText += '<td><label><input type="checkbox" style="margin-right: 0.5em">' + entry.id + '</label>';
     entryText += '<td>' + entry.domain;
     entryText += '<td>' + entry.last_updated;
     entryText += '<td>' + entry.imported;
