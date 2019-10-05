@@ -204,8 +204,12 @@ function restoreOptions() {
 
   var getting = storage.get("debug");
   getting.then( (result) => {
-    console.log(result);
-    document.getElementById('debug').value = result;
+    console.debug("[options/restoreOptions]", result);
+    if("debug" in result) {
+      document.getElementById('debug').checked = result.debug;
+    } else {
+      console.debug("[options/restoreOptions] key 'debug' doesn't exist in result");
+    }
   }, onError);
 }
 
