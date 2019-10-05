@@ -296,7 +296,11 @@ case  1: // run detection
 
       let suggested = Object.keys(msgResp.domains_and_matches);
 
+      const manifest = browser.runtime.getManifest();
+
       var data = {
+        auntietunaVersion   : manifest.version,
+        timestamp           : Date.now(),
         debugMode           : debug,
         visited             : document.domain,
         matches             : msgResp.number_matched_hashes,
