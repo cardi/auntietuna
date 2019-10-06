@@ -8,8 +8,8 @@ For example, a user adds a snapshot of Bank of FooBar. The extension
 then checks every other page the user visits to see if it looks like
 Bank of FooBar–if it does, it's likely phish and blocked.
 
-A paper describing the details and usability of AuntieTuna can be found
-online:
+A peer-reviewed, research paper describing the details and usability of
+AuntieTuna can be found online:
 > Calvin Ardi and John Heidemann 2016. **AuntieTuna: Personalized
 > Content-Based Phishing Detection**. *Proceedings of the NDSS Workshop
 > on Usable Security* (San Diego, California, USA, Feb. 2016).
@@ -35,17 +35,33 @@ any notes on your usage.
 ## installation
 
 There are multiple ways to install the AuntieTuna browser extension via
-sideloading.
+sideloading. (Soon to be available on the official addon distribution
+websites.)
 
 [Information about the requested permissions](#TODO).
 
 ### firefox
 
-**TODO** instructions will differ on stable, beta, nightly, developer
+To install the **latest release** (v0.0.4), click on
+[auntietuna-0.0.4-fx.xpi][auntietuna-0.0.4-fx.xpi] and install the
+signed add-on. If you saved the `.xpi` file to your computer, you can [install
+the add-on from the file][install-instructions].
+
+To install the latest development snapshot (temporarily):
+1. Go to `about:debugging#/runtime/this-firefox`
+2. Click on "Load Temporary Add-on..."
+3. Browse to and open `auntietuna/src/manifest.json`
+4. AuntieTuna is temporarily installed until you exit the browser
+
+[auntietuna-0.0.4-fx.xpi]: https://github.com/cardi/auntietuna/releases/download/v0.0.4/auntietuna-0.0.4-fx.xpi)
+[install-instructions]: https://extensionworkshop.com/documentation/publish/distribute-sideloading/#install-addon-from-file
 
 ### chrome / chromium
 
-**TODO**
+*v0.0.4+ has not yet been tested for compatibility with Google Chrome /
+Chromium.*
+
+The following instructions are for v0.0.3 and earlier:
 
 1. Go to Extensions (Window -> Extensions) or "chrome://extensions"
 2. Click on "Load unpacked extensions..."
@@ -68,6 +84,10 @@ profile.)
 3. Clone this repository: `git clone https://github.com/cardi/auntietuna.git`
 4. (optional) In `run.sh`, modify the paths to `FIREFOX_BIN` and `FIREFOX_DIST`
 5. Execute `run.sh`
+
+### development (chrome / chromium)
+
+**TODO**
 
 ## usage
 
