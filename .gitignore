@@ -1,2 +1,11 @@
+# local stuff
 *.bak
 _*
+
+# firefox outputs
+*.xpi
+*.zip
+
+# mac stuff
+.DS_Store
+._*
