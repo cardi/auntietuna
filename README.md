@@ -25,6 +25,9 @@ also be found at <https://auntietuna.ant.isi.edu> or
 Contributions are welcome!
 
 We need help with the following:
+* general usage of the addon
+* finding/reporting false positives
+* porting to Google Chrome / Chromium (might require polyfill libraries)
 * **TODO**
 
 Feel free to open a [pull request](https://github.com/cardi/auntietuna/pulls)
@@ -81,6 +84,23 @@ profile.)
 3. Clone this repository: `git clone https://github.com/cardi/auntietuna.git`
 4. (optional) In `run.sh`, modify the paths to `FIREFOX_BIN` and `FIREFOX_DIST`
 5. Execute `run.sh`
+
+Optionally, you can build an unsigned `.xpi` by running `make` at the
+root of the repository. The unsigned extension can be installed on
+Nightly / Developer editions of Firefox (see next subsection).
+
+#### firefox nightly / developer edition
+
+If you're running Firefox Nightly or Developer edition, you can install
+an unsigned extension by [disabling signature
+enforcement](https://wiki.mozilla.org/Add-ons/Extension_Signing#FAQ):
+
+1. type `about:config` into the URL bar in Firefox
+2. in the Search box type `xpinstall.signatures.required`
+3. double-click the preference, or right-click and selected "Toggle", to
+   set it to `false`.
+
+You can now load an unsigned addon from a file.
 
 ### development (chrome / chromium)
 
