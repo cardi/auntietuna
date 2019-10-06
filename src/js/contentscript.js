@@ -328,8 +328,7 @@ case  1: // run detection
 
       // DEBUG: since we're in alpha, inject a DIV with debugging
       // information to sort out false positives
-      let debugInfoDiv = document.createElement("div");
-      debugInfoDiv.attachShadow({mode: 'open'}).innerHTML =
+      const stuff =
       ` <style>
           :host {
             all        : initial; /* 1st rule so subsequent properties are reset. */
@@ -357,6 +356,14 @@ case  1: // run detection
         Thank you!
         <pre>${JSON.stringify(data)}</pre>
         </p>`;
+
+      let debugInfoDiv = document.createElement("div");
+
+      var div = document.createElement('div');
+      div.insertAdjacentHTML("afterbegin", stuff);
+
+      let shadow = debugInfoDiv.attachShadow({mode: 'open'});
+      shadow.appendChild(div);
 
       debugInfoDiv.style.height    = "350px";
       debugInfoDiv.style.position  = "fixed";
