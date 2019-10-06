@@ -43,18 +43,15 @@ websites.)
 ### firefox
 
 To install the **latest release** (v0.0.4), click on
-[auntietuna-0.0.4-fx.xpi][auntietuna-0.0.4-fx.xpi] and install the
-signed add-on. If you saved the `.xpi` file to your computer, you can [install
-the add-on from the file][install-instructions].
+[auntietuna-0.0.4-fx.xpi](https://github.com/cardi/auntietuna/releases/download/v0.0.4/auntietuna-0.0.4-fx.xpi)
+and install the signed add-on. If you saved the `.xpi` file to your computer, you can
+[install the add-on from the file](https://extensionworkshop.com/documentation/publish/distribute-sideloading/#install-addon-from-file).
 
-To install the latest development snapshot (temporarily):
+To install the latest development snapshot (temporarily) from git:
 1. Go to `about:debugging#/runtime/this-firefox`
 2. Click on "Load Temporary Add-on..."
 3. Browse to and open `auntietuna/src/manifest.json`
 4. AuntieTuna is temporarily installed until you exit the browser
-
-[auntietuna-0.0.4-fx.xpi]: https://github.com/cardi/auntietuna/releases/download/v0.0.4/auntietuna-0.0.4-fx.xpi)
-[install-instructions]: https://extensionworkshop.com/documentation/publish/distribute-sideloading/#install-addon-from-file
 
 ### chrome / chromium
 
