@@ -218,15 +218,19 @@ function restoreOptions() {
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
 
-// update options page with list of hashes inside db and we're done
-await updateDisplaySites();
-
 // QoL: subscribe to changes in the db and update the page when possible.
 // note that dexie-observable.js needs to be imported on the producer
 // (i.e., background.js) and consumer side
 db.on('changes', function(changes) {
   updateDisplaySites();
 });
+
+// update options page with list of hashes inside db and we're done
+await updateDisplaySites();
+
+// display the version number
+document.getElementById('version')
+        .insertAdjacentText('afterbegin', manifest.version);
 
 ////////////////////////////////////////////////////////////////////////
 })();
