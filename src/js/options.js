@@ -51,7 +51,9 @@ async function exportSelectedHashes() {
     }
   });
   console.log("[options/exportSelectedHashes] export checked:", ids);
-  exportHashes(ids);
+  if(ids.length != 0) {
+    exportHashes(ids);
+  }
 }
 
 async function resetHashes() {
