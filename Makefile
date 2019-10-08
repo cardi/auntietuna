@@ -6,6 +6,6 @@ auntietuna-unsigned.xpi: src/*
 all: %.xpi
 
 clean:
-	$(RM) auntietuna-unsigned.xpi
+	$(RM) auntietuna-*.xpi
 
 # vim: set noexpandtab ts=2 sw=2 tw=72:
