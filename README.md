@@ -37,19 +37,19 @@ any notes on your usage.
 
 ## installation
 
-There are multiple ways to install the AuntieTuna browser extension via
-sideloading. (Soon to be available on the official addon distribution
-websites.)
+You can install the AuntieTuna browser extension via sideloading.
 
 [Information about the requested permissions](#TODO).
 
 ### firefox
 
-To install the **latest release** (v0.0.4), click on
-[auntietuna-0.0.4-fx.xpi](https://github.com/cardi/auntietuna/releases/download/v0.0.4/auntietuna-0.0.4-fx.xpi)
-and install the signed add-on. If you saved the `.xpi` file to your computer, you can
+**General Installation**:
+Go to the [Latest Release](https://github.com/cardi/auntietuna/releases/latest)
+page and install the signed add-on (`auntietuna-0.0.x.x-fx.xpi`).
+If you saved the `.xpi` file to your computer, you can
 [install the add-on from the file](https://extensionworkshop.com/documentation/publish/distribute-sideloading/#install-addon-from-file).
 
+**Temporary Installation**:
 To install the latest development snapshot (temporarily) from git:
 1. Go to `about:debugging#/runtime/this-firefox`
 2. Click on "Load Temporary Add-on..."
