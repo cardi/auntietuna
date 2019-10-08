@@ -20,7 +20,8 @@
 
   "browser_specific_settings": {
     "gecko": {
-      "id": "auntietuna@ant.isi.edu"
+      "id": "auntietuna@ant.isi.edu",
+      "update_url": "https://raw.githubusercontent.com/cardi/auntietuna/master/dist/firefox/updates.json"
     }
   },
 
