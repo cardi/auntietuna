@@ -12,30 +12,46 @@ const storage = browser.storage.local;
 // function defs ///////////////////////////////////////////////////////
 function onError(error) { console.error("[options]", `${error}`); }
 
-// TODO `id` should be an array of ints
-async function exportHashes(id) {
-  if (id == null) {
+async function exportHashes(ids) {
+  let result = [];
+  // TODO select only certain keys instead of all of them
+  if (ids == null) {
     // select all
-    const result = await db.good.toArray();
-    //console.debug("button:", result);
-    let data = JSON.stringify(result);
-    //console.debug("data:", data);
-
-    // build json blob for saving
-    let blob = new Blob([data], {type: "application/json;charset=utf-8"});
-
-    // build filename
-    let date = new Date();
-    let url = window.URL.createObjectURL(blob);
-    let name = `hashes-${date.toJSON()}.json`;
-
-    console.log("[options/exportHashes]", "exporting to", name);
-
-    // use FileSaver to save file
-    saveAs(blob, name);
+    result = await db.good.toArray();
   } else {
-    // TODO select one or more rows by id, and export
+    // `ids` input is initially an array of strings
+    result = await db.good.where('id').anyOf(ids.map(Number)).toArray();
   }
+
+  //console.debug("button:", result);
+  let data = JSON.stringify(result);
+  //console.debug("data:", data);
+
+  // build json blob for saving
+  let blob = new Blob([data], {type: "application/json;charset=utf-8"});
+
+  // build filename
+  let date = new Date();
+  let url = window.URL.createObjectURL(blob);
+  let name = `hashes-${date.toJSON()}.json`;
+
+  console.log("[options/exportHashes]", "exporting to", name);
+
+  // use FileSaver to save file
+  saveAs(blob, name);
+}
+
+async function exportSelectedHashes() {
+  let ids = []
+  let sites = document.querySelectorAll("div#sites input");
+  sites.forEach( (element) => {
+    if(element.type === 'checkbox' && element.checked === true && element.value != "all") {
+      //console.log("checked:", element.value);
+      ids.push(element.value);
+    }
+  });
+  console.log("[options/exportSelectedHashes] export checked:", ids);
+  exportHashes(ids);
 }
 
 async function resetHashes() {
@@ -68,14 +84,14 @@ async function updateDisplaySites() {
 
   let displayText = "<table>";
   displayText += "<tr>";
-  displayText += "<th>";
+  displayText += '<th><label><input type="checkbox" id="selectAll" value="all"></label>';
   displayText += "<th>domain";
   displayText += "<th>last updated";
   displayText += "<th>imported on";
   displayText += "</tr>";
   for(const entry of result) {
     let entryText = "<tr>";
-    entryText += '<td><label><input type="checkbox" style="margin-right: 0.5em">' + entry.id + '</label>';
+    entryText += '<td><label><input type="checkbox" style="margin-right: 0.5em" value="'+entry.id+'">' + entry.id + '</label>';
     entryText += '<td>' + entry.domain;
     entryText += '<td>' + entry.last_updated;
     entryText += '<td>' + entry.imported;
@@ -90,6 +106,19 @@ async function updateDisplaySites() {
   while (sites.firstChild) sites.removeChild(sites.firstChild);
   // use insertAdjacentHTML in place of .innerHTML
   sites.insertAdjacentHTML('afterbegin', displayText);
+
+  // put this here for now because we need to wait for the DOM to be loaded
+  let selectAll = document.getElementById('selectAll')
+  selectAll.addEventListener('click', () => {
+    let sites = document.querySelectorAll("div#sites input");
+    let check = selectAll.checked;
+    sites.forEach( (element) => {
+      element.checked = check;
+    });
+  }, false);
+
+
+
 }
 
 function updateDisplayStatus(txt) {
@@ -174,6 +203,9 @@ console.assert("lorem ipsum" == testExportText, { textExportText: testExportText
 // add event listeners to options.html
 document.getElementById('exportAllHashes')
         .addEventListener('click', () => exportHashes(null), false);
+
+document.getElementById('exportSelectedHashes')
+        .addEventListener('click', () => exportSelectedHashes(), false);
 
 document.getElementById('importFilePicker')
         .addEventListener('change', handleFilePicker, false);
