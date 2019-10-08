@@ -1,0 +1,13 @@
+{
+ "addons": {
+  "auntietuna@ant.isi.edu": {
+   "updates": [
+    {
+     "version": "0.0.4.1",
+     "update_info_url": "https://github.com/cardi/auntietuna/releases/tag/v0.0.4.1",
+     "update_link": "https://github.com/cardi/auntietuna/releases/download/v0.0.4.1/auntietuna-0.0.4.1-fx.xpi"
+    }
+   ]
+  }
+ }
+}
