@@ -4,7 +4,7 @@
  *
  * By David Fahlander, david.fahlander@gmail.com
  *
- * Version 3.0.0-alpha.8, Fri Apr 26 2019
+ * Version 3.0.0-beta.1, Thu Oct 10 2019
  *
  * http://dexie.org
  *
@@ -198,8 +198,10 @@ var concat = [].concat;
 function flatten(a) {
     return concat.apply([], a);
 }
-var intrinsicTypes = "Boolean,String,Date,RegExp,Blob,File,FileList,ArrayBuffer,DataView,Uint8ClampedArray,ImageData,Map,Set"
-    .split(',').concat(flatten([8, 16, 32, 64].map(function (num) { return ["Int", "Uint", "Float"].map(function (t) { return t + num + "Array"; }); }))).filter(function (t) { return _global[t]; }).map(function (t) { return _global[t]; });
+var intrinsicTypeNames = "Boolean,String,Date,RegExp,Blob,File,FileList,ArrayBuffer,DataView,Uint8ClampedArray,ImageData,Map,Set"
+    .split(',').concat(flatten([8, 16, 32, 64].map(function (num) { return ["Int", "Uint", "Float"].map(function (t) { return t + num + "Array"; }); }))).filter(function (t) { return _global[t]; });
+var intrinsicTypes = intrinsicTypeNames.map(function (t) { return _global[t]; });
+var intrinsicTypeNameSet = arrayToObject(intrinsicTypeNames, function (x) { return [x, true]; });
 function deepClone(any) {
     if (!any || typeof any !== 'object')
         return any;
@@ -223,6 +225,17 @@ function deepClone(any) {
     }
     return rv;
 }
+var toString = {}.toString;
+function toStringTag(o) {
+    return toString.call(o).slice(8, -1);
+}
+var getValueOf = function (val, type) {
+    return type === "Array" ? '' + val.map(function (v) { return getValueOf(v, toStringTag(v)); }) :
+        type === "ArrayBuffer" ? '' + new Uint8Array(val) :
+            type === "Date" ? val.getTime() :
+                ArrayBuffer.isView(val) ? '' + new Uint8Array(val.buffer) :
+                    val;
+};
 function getObjectDiff(a, b, rv, prfx) {
     rv = rv || {};
     prfx = prfx || '';
@@ -231,10 +244,23 @@ function getObjectDiff(a, b, rv, prfx) {
             rv[prfx + prop] = undefined;
         else {
             var ap = a[prop], bp = b[prop];
-            if (typeof ap === 'object' && typeof bp === 'object' &&
-                ap && bp &&
-                ('' + ap.constructor) === ('' + bp.constructor))
-                getObjectDiff(ap, bp, rv, prfx + prop + ".");
+            if (typeof ap === 'object' && typeof bp === 'object' && ap && bp) {
+                var apTypeName = toStringTag(ap);
+                var bpTypeName = toStringTag(bp);
+                if (apTypeName === bpTypeName) {
+                    if (intrinsicTypeNameSet[apTypeName]) {
+                        if (getValueOf(ap, apTypeName) !== getValueOf(bp, bpTypeName)) {
+                            rv[prfx + prop] = b[prop];
+                        }
+                    }
+                    else {
+                        getObjectDiff(ap, bp, rv, prfx + prop + ".");
+                    }
+                }
+                else {
+                    rv[prfx + prop] = b[prop];
+                }
+            }
             else if (ap !== bp)
                 rv[prfx + prop] = b[prop];
         }
@@ -541,24 +567,25 @@ function promisableChain(f1, f2) {
 var INTERNAL = {};
 var LONG_STACKS_CLIP_LIMIT = 100;
 var MAX_LONG_STACKS = 20;
-var ZONE_ECHO_LIMIT = 7;
-var nativePromiseInstanceAndProto = (function () {
-    try {
-        return new Function('let F=async ()=>{},p=F();return [p,Object.getPrototypeOf(p),Promise.resolve(),F.constructor];')();
-    }
-    catch (e) {
-        var P = _global.Promise;
-        return P ?
-            [P.resolve(), P.prototype, P.resolve()] :
-            [];
-    }
-})();
-var resolvedNativePromise = nativePromiseInstanceAndProto[0];
-var nativePromiseProto = nativePromiseInstanceAndProto[1];
-var resolvedGlobalPromise = nativePromiseInstanceAndProto[2];
+var ZONE_ECHO_LIMIT = 100;
+var _a = typeof Promise === 'undefined' ?
+    [] :
+    (function () {
+        var globalP = Promise.resolve();
+        if (typeof crypto === 'undefined' || !crypto.subtle)
+            return [globalP, globalP.__proto__, globalP];
+        var nativeP = crypto.subtle.digest("SHA-512", new Uint8Array([0]));
+        return [
+            nativeP,
+            nativeP.__proto__,
+            globalP
+        ];
+    })();
+var resolvedNativePromise = _a[0];
+var nativePromiseProto = _a[1];
+var resolvedGlobalPromise = _a[2];
 var nativePromiseThen = nativePromiseProto && nativePromiseProto.then;
 var NativePromise = resolvedNativePromise && resolvedNativePromise.constructor;
-var AsyncFunction = nativePromiseInstanceAndProto[3];
 var patchGlobalPromise = !!resolvedGlobalPromise;
 var stack_being_generated = false;
 var schedulePhysicalTick = resolvedGlobalPromise ?
@@ -610,7 +637,7 @@ var PSD = globalPSD;
 var microtickQueue = [];
 var numScheduledCalls = 0;
 var tickFinalizers = [];
-function Promise$1(fn) {
+function DexiePromise(fn) {
     if (typeof this !== 'object')
         throw new TypeError('Promises must be constructed via new');
     this._listeners = [];
@@ -644,7 +671,7 @@ var thenProp = {
             var possibleAwait = !psd.global && (psd !== PSD || microTaskId !== totalEchoes);
             if (possibleAwait)
                 decrementExpectedAwaits();
-            var rv = new Promise$1(function (resolve, reject) {
+            var rv = new DexiePromise(function (resolve, reject) {
                 propagateToListener(_this, new Listener(nativeAwaitCompatibleWrap(onFulfilled, psd, possibleAwait), nativeAwaitCompatibleWrap(onRejected, psd, possibleAwait), resolve, reject, psd));
             });
             debug && linkToPreviousPromise(rv, this);
@@ -664,7 +691,7 @@ var thenProp = {
             });
     }
 };
-props(Promise$1.prototype, {
+props(DexiePromise.prototype, {
     then: thenProp,
     _then: function (onFulfilled, onRejected) {
         propagateToListener(this, new Listener(null, null, onFulfilled, onRejected, PSD));
@@ -709,14 +736,14 @@ props(Promise$1.prototype, {
     timeout: function (ms, msg) {
         var _this = this;
         return ms < Infinity ?
-            new Promise$1(function (resolve, reject) {
+            new DexiePromise(function (resolve, reject) {
                 var handle = setTimeout(function () { return reject(new exceptions.Timeout(msg)); }, ms);
                 _this.then(resolve, reject).finally(clearTimeout.bind(null, handle));
             }) : this;
     }
 });
 if (typeof Symbol !== 'undefined' && Symbol.toStringTag)
-    setProp(Promise$1.prototype, Symbol.toStringTag, 'Promise');
+    setProp(DexiePromise.prototype, Symbol.toStringTag, 'Dexie.Promise');
 globalPSD.env = snapShot();
 function Listener(onFulfilled, onRejected, resolve, reject, zone) {
     this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
@@ -725,15 +752,15 @@ function Listener(onFulfilled, onRejected, resolve, reject, zone) {
     this.reject = reject;
     this.psd = zone;
 }
-props(Promise$1, {
+props(DexiePromise, {
     all: function () {
         var values = getArrayOf.apply(null, arguments)
             .map(onPossibleParallellAsync);
-        return new Promise$1(function (resolve, reject) {
+        return new DexiePromise(function (resolve, reject) {
             if (values.length === 0)
                 resolve([]);
             var remaining = values.length;
-            values.forEach(function (a, i) { return Promise$1.resolve(a).then(function (x) {
+            values.forEach(function (a, i) { return DexiePromise.resolve(a).then(function (x) {
                 values[i] = x;
                 if (!--remaining)
                     resolve(values);
@@ -741,21 +768,21 @@ props(Promise$1, {
         });
     },
     resolve: function (value) {
-        if (value instanceof Promise$1)
+        if (value instanceof DexiePromise)
             return value;
         if (value && typeof value.then === 'function')
-            return new Promise$1(function (resolve, reject) {
+            return new DexiePromise(function (resolve, reject) {
                 value.then(resolve, reject);
             });
-        var rv = new Promise$1(INTERNAL, true, value);
+        var rv = new DexiePromise(INTERNAL, true, value);
         linkToPreviousPromise(rv, currentFulfiller);
         return rv;
     },
     reject: PromiseReject,
     race: function () {
         var values = getArrayOf.apply(null, arguments).map(onPossibleParallellAsync);
-        return new Promise$1(function (resolve, reject) {
-            values.map(function (value) { return Promise$1.resolve(value).then(resolve, reject); });
+        return new DexiePromise(function (resolve, reject) {
+            values.map(function (value) { return DexiePromise.resolve(value).then(resolve, reject); });
         });
     },
     PSD: {
@@ -773,7 +800,7 @@ props(Promise$1, {
         set: function (value) { rejectionMapper = value; }
     },
     follow: function (fn, zoneProps) {
-        return new Promise$1(function (resolve, reject) {
+        return new DexiePromise(function (resolve, reject) {
             return newScope(function (resolve, reject) {
                 var psd = PSD;
                 psd.unhandleds = [];
@@ -799,7 +826,7 @@ function executePromiseTask(promise, fn) {
             var shouldExecuteTick = promise._lib && beginMicroTickScope();
             if (value && typeof value.then === 'function') {
                 executePromiseTask(promise, function (resolve, reject) {
-                    value instanceof Promise$1 ?
+                    value instanceof DexiePromise ?
                         value._then(resolve, reject) :
                         value.then(resolve, reject);
                 });
@@ -992,7 +1019,7 @@ function markErrorAsHandled(promise) {
         }
 }
 function PromiseReject(reason) {
-    return new Promise$1(INTERNAL, false, reason);
+    return new DexiePromise(INTERNAL, false, reason);
 }
 function wrap(fn, errorCatcher) {
     var psd = PSD;
@@ -1026,12 +1053,12 @@ function newScope(fn, props$$1, a1, a2) {
     psd.id = ++zone_id_counter;
     var globalEnv = globalPSD.env;
     psd.env = patchGlobalPromise ? {
-        Promise: Promise$1,
-        PromiseProp: { value: Promise$1, configurable: true, writable: true },
-        all: Promise$1.all,
-        race: Promise$1.race,
-        resolve: Promise$1.resolve,
-        reject: Promise$1.reject,
+        Promise: DexiePromise,
+        PromiseProp: { value: DexiePromise, configurable: true, writable: true },
+        all: DexiePromise.all,
+        race: DexiePromise.race,
+        resolve: DexiePromise.resolve,
+        reject: DexiePromise.reject,
         nthen: getPatchedPromiseThen(globalEnv.nthen, psd),
         gthen: getPatchedPromiseThen(globalEnv.gthen, psd)
     } : {};
@@ -1059,6 +1086,9 @@ function decrementExpectedAwaits(sourceTaskId) {
     if (--task.awaits === 0)
         task.id = 0;
     task.echoes = task.awaits * ZONE_ECHO_LIMIT;
+}
+if (('' + nativePromiseThen).indexOf('[native code]') === -1) {
+    incrementExpectedAwaits = decrementExpectedAwaits = nop;
 }
 function onPossibleParallellAsync(possiblePromise) {
     if (task.echoes && possiblePromise && possiblePromise.constructor === NativePromise) {
@@ -1188,7 +1218,7 @@ function globalError(err, promise) {
         }
         catch (e) { }
 }
-var rejection = Promise$1.reject;
+var rejection = DexiePromise.reject;
 
 function tempTransaction(db, mode, storeNames, fn) {
     if (!db._state.openComplete && (!PSD.letThrough)) {
@@ -1218,7 +1248,7 @@ function tempTransaction(db, mode, storeNames, fn) {
     }
 }
 
-var DEXIE_VERSION = '3.0.0-alpha.8';
+var DEXIE_VERSION = '3.0.0-beta.1';
 var maxString = String.fromCharCode(65535);
 var minKey = -Infinity;
 var INVALID_KEY_ARGUMENT = "Invalid key provided. Keys must be of type string, number, Date or Array<string | number | Date>.";
@@ -1396,7 +1426,7 @@ var Table =               (function () {
         var _this = this;
         return this._trans('readwrite', function (trans) {
             return _this.core.mutate({ trans: trans, type: 'add', keys: key != null ? [key] : null, values: [obj] });
-        }).then(function (res) { return res.numFailures ? Promise$1.reject(res.failures[0]) : res.lastResult; })
+        }).then(function (res) { return res.numFailures ? DexiePromise.reject(res.failures[0]) : res.lastResult; })
             .then(function (lastResult) {
             if (!_this.core.schema.primaryKey.outbound) {
                 try {
@@ -1427,7 +1457,7 @@ var Table =               (function () {
     Table.prototype.put = function (obj, key) {
         var _this = this;
         return this._trans('readwrite', function (trans) { return _this.core.mutate({ trans: trans, type: 'put', values: [obj], keys: key != null ? [key] : null }); })
-            .then(function (res) { return res.numFailures ? Promise$1.reject(res.failures[0]) : res.lastResult; })
+            .then(function (res) { return res.numFailures ? DexiePromise.reject(res.failures[0]) : res.lastResult; })
             .then(function (lastResult) {
             if (!_this.core.schema.primaryKey.outbound) {
                 try {
@@ -1442,12 +1472,12 @@ var Table =               (function () {
     Table.prototype.delete = function (key) {
         var _this = this;
         return this._trans('readwrite', function (trans) { return _this.core.mutate({ trans: trans, type: 'delete', keys: [key] }); })
-            .then(function (res) { return res.numFailures ? Promise$1.reject(res.failures[0]) : undefined; });
+            .then(function (res) { return res.numFailures ? DexiePromise.reject(res.failures[0]) : undefined; });
     };
     Table.prototype.clear = function () {
         var _this = this;
         return this._trans('readwrite', function (trans) { return _this.core.mutate({ trans: trans, type: 'deleteRange', range: AnyRange }); })
-            .then(function (res) { return res.numFailures ? Promise$1.reject(res.failures[0]) : undefined; });
+            .then(function (res) { return res.numFailures ? DexiePromise.reject(res.failures[0]) : undefined; });
     };
     Table.prototype.bulkGet = function (keys$$1) {
         var _this = this;
@@ -1466,12 +1496,13 @@ var Table =               (function () {
                 throw new exceptions.InvalidArgument("bulkAdd(): keys argument invalid on tables with inbound keys");
             if (keys$$1 && keys$$1.length !== objects.length)
                 throw new exceptions.InvalidArgument("Arguments objects and keys must have the same length");
+            var numObjects = objects.length;
             return _this.core.mutate({ trans: trans, type: 'add', keys: keys$$1, values: objects })
                 .then(function (_a) {
                 var numFailures = _a.numFailures, lastResult = _a.lastResult, failures = _a.failures;
                 if (numFailures === 0)
                     return lastResult;
-                throw new BulkError(_this.name + ".bulkAdd(): " + numFailures + " of " + objects.length + " operations failed", Object.keys(failures).map(function (pos) { return failures[pos]; }));
+                throw new BulkError(_this.name + ".bulkAdd(): " + numFailures + " of " + numObjects + " operations failed", Object.keys(failures).map(function (pos) { return failures[pos]; }));
             });
         });
     };
@@ -1483,24 +1514,26 @@ var Table =               (function () {
                 throw new exceptions.InvalidArgument("bulkPut(): keys argument invalid on tables with inbound keys");
             if (keys$$1 && keys$$1.length !== objects.length)
                 throw new exceptions.InvalidArgument("Arguments objects and keys must have the same length");
+            var numObjects = objects.length;
             return _this.core.mutate({ trans: trans, type: 'put', keys: keys$$1, values: objects })
                 .then(function (_a) {
                 var numFailures = _a.numFailures, lastResult = _a.lastResult, failures = _a.failures;
                 if (numFailures === 0)
                     return lastResult;
-                throw new BulkError(_this.name + ".bulkPut(): " + numFailures + " of " + objects.length + " operations failed", Object.keys(failures).map(function (pos) { return failures[pos]; }));
+                throw new BulkError(_this.name + ".bulkPut(): " + numFailures + " of " + numObjects + " operations failed", Object.keys(failures).map(function (pos) { return failures[pos]; }));
             });
         });
     };
     Table.prototype.bulkDelete = function (keys$$1) {
         var _this = this;
+        var numKeys = keys$$1.length;
         return this._trans('readwrite', function (trans) {
             return _this.core.mutate({ trans: trans, type: 'delete', keys: keys$$1 });
         }).then(function (_a) {
             var numFailures = _a.numFailures, lastResult = _a.lastResult, failures = _a.failures;
             if (numFailures === 0)
                 return lastResult;
-            throw new BulkError(_this.name + ".bulkDelete(): " + numFailures + " of " + keys$$1.length + " operations failed", failures);
+            throw new BulkError(_this.name + ".bulkDelete(): " + numFailures + " of " + numKeys + " operations failed", failures);
         });
     };
     return Table;
@@ -2548,7 +2581,7 @@ var Transaction =               (function () {
         if (!this.active)
             return rejection(new exceptions.TransactionInactive());
         if (this._locked()) {
-            return new Promise$1(function (resolve, reject) {
+            return new DexiePromise(function (resolve, reject) {
                 _this._blockedFuncs.push([function () {
                         _this._promise(mode, fn, bWriteLock).then(resolve, reject);
                     }, PSD]);
@@ -2556,7 +2589,7 @@ var Transaction =               (function () {
         }
         else if (bWriteLock) {
             return newScope(function () {
-                var p = new Promise$1(function (resolve, reject) {
+                var p = new DexiePromise(function (resolve, reject) {
                     _this._lock();
                     var rv = fn(resolve, reject, _this);
                     if (rv && rv.then)
@@ -2568,7 +2601,7 @@ var Transaction =               (function () {
             });
         }
         else {
-            var p = new Promise$1(function (resolve, reject) {
+            var p = new DexiePromise(function (resolve, reject) {
                 var rv = fn(resolve, reject, _this);
                 if (rv && rv.then)
                     rv.then(resolve, reject);
@@ -2582,7 +2615,7 @@ var Transaction =               (function () {
     };
     Transaction.prototype.waitFor = function (promiseLike) {
         var root = this._root();
-        var promise = Promise$1.resolve(promiseLike);
+        var promise = DexiePromise.resolve(promiseLike);
         if (root._waitingFor) {
             root._waitingFor = root._waitingFor.then(function () { return promise; });
         }
@@ -2599,7 +2632,7 @@ var Transaction =               (function () {
             }());
         }
         var currentWaitPromise = root._waitingFor;
-        return new Promise$1(function (resolve, reject) {
+        return new DexiePromise(function (resolve, reject) {
             promise.then(function (res) { return root._waitingQueue.push(wrap(resolve.bind(null, res))); }, function (err) { return root._waitingQueue.push(wrap(reject.bind(null, err))); }).finally(function () {
                 if (root._waitingFor === currentWaitPromise) {
                     root._waitingFor = null;
@@ -2645,7 +2678,7 @@ function createTransactionConstructor(db) {
         this._waitingFor = null;
         this._waitingQueue = null;
         this._spinCount = 0;
-        this._completion = new Promise$1(function (resolve, reject) {
+        this._completion = new DexiePromise(function (resolve, reject) {
             _this._resolve = resolve;
             _this._reject = reject;
         });
@@ -3162,7 +3195,7 @@ function runUpgraders(db, oldVersion, idbUpgradeTrans, reject) {
                 createTable(idbUpgradeTrans, tableName, globalSchema[tableName].primKey, globalSchema[tableName].indexes);
             });
             generateMiddlewareStacks(db, idbUpgradeTrans);
-            Promise$1.follow(function () { return db.on.populate.fire(trans); }).catch(rejectTransaction);
+            DexiePromise.follow(function () { return db.on.populate.fire(trans); }).catch(rejectTransaction);
         }
         else
             updateTablesAndIndexes(db, oldVersion, trans, idbUpgradeTrans).catch(rejectTransaction);
@@ -3213,21 +3246,25 @@ function updateTablesAndIndexes(db, oldVersion, trans, idbUpgradeTrans) {
                 removeTablesApi(db, [db.Transaction.prototype]);
                 setApiOnPlace(db, [db.Transaction.prototype], keys(upgradeSchema_1), upgradeSchema_1);
                 trans.schema = upgradeSchema_1;
-                if (contentUpgrade.constructor === AsyncFunction) {
-                    incrementExpectedAwaits();
-                }
+                incrementExpectedAwaits();
                 var returnValue_1;
-                var promiseFollowed = Promise$1.follow(function () {
+                var promiseFollowed = DexiePromise.follow(function () {
                     returnValue_1 = contentUpgrade(trans);
                     if (returnValue_1) {
                         if (returnValue_1.constructor === NativePromise) {
                             var decrementor = decrementExpectedAwaits.bind(null, null);
                             returnValue_1.then(decrementor, decrementor);
                         }
+                        else {
+                            decrementExpectedAwaits();
+                        }
+                    }
+                    else {
+                        decrementExpectedAwaits();
                     }
                 });
                 return (returnValue_1 && typeof returnValue_1.then === 'function' ?
-                    Promise$1.resolve(returnValue_1) : promiseFollowed.then(function () { return returnValue_1; }));
+                    DexiePromise.resolve(returnValue_1) : promiseFollowed.then(function () { return returnValue_1; }));
             }
         });
         queue.push(function (idbtrans) {
@@ -3241,8 +3278,8 @@ function updateTablesAndIndexes(db, oldVersion, trans, idbUpgradeTrans) {
         });
     });
     function runQueue() {
-        return queue.length ? Promise$1.resolve(queue.shift()(trans.idbtrans)).then(runQueue) :
-            Promise$1.resolve();
+        return queue.length ? DexiePromise.resolve(queue.shift()(trans.idbtrans)).then(runQueue) :
+            DexiePromise.resolve();
     }
     return runQueue().then(function () {
         createMissingTables(globalSchema, idbUpgradeTrans);
@@ -3451,7 +3488,7 @@ function DatabaseEnumerator(indexedDB) {
     }
     return {
         getDatabaseNames: function () {
-            return getDatabaseNamesNative ? new Promise$1(function (resolve, reject) {
+            return getDatabaseNamesNative ? new DexiePromise(function (resolve, reject) {
                 var req = getDatabaseNamesNative.call(indexedDB);
                 req.onsuccess = function (event) { return resolve(slice(event.target.result, 0)); };
                 req.onerror = eventRejectHandler(reject);
@@ -3492,7 +3529,7 @@ function dexieOpen(db) {
     state.openComplete = false;
     var resolveDbReady = state.dbReadyResolve,
     upgradeTransaction = null;
-    return Promise$1.race([state.openCanceller, new Promise$1(function (resolve, reject) {
+    return DexiePromise.race([state.openCanceller, new DexiePromise(function (resolve, reject) {
             if (!indexedDB)
                 throw new exceptions.MissingAPI("indexedDB API not found. If using IE10+, make sure to run your code on a server URL " +
                     "(not locally). If using old Safari versions, make sure to include indexedDB polyfill.");
@@ -3546,11 +3583,11 @@ function dexieOpen(db) {
             }, reject);
         })]).then(function () {
         state.onReadyBeingFired = [];
-        return Promise$1.resolve(vip(db.on.ready.fire)).then(function fireRemainders() {
+        return DexiePromise.resolve(vip(db.on.ready.fire)).then(function fireRemainders() {
             if (state.onReadyBeingFired.length > 0) {
                 var remainders = state.onReadyBeingFired.reduce(promisableChain, nop);
                 state.onReadyBeingFired = [];
-                return Promise$1.resolve(vip(remainders)).then(fireRemainders);
+                return DexiePromise.resolve(vip(remainders)).then(fireRemainders);
             }
         });
     }).finally(function () {
@@ -3599,7 +3636,7 @@ function extractTransactionArgs(mode, _tableArgs_, scopeFunc) {
     return [mode, tables, scopeFunc];
 }
 function enterTransactionScope(db, mode, storeNames, parentTransaction, scopeFunc) {
-    return Promise$1.resolve().then(function () {
+    return DexiePromise.resolve().then(function () {
         var transless = PSD.transless || PSD;
         var trans = db._createTransaction(mode, storeNames, db._dbSchema, parentTransaction);
         var zoneProps = {
@@ -3612,24 +3649,28 @@ function enterTransactionScope(db, mode, storeNames, parentTransaction, scopeFun
         else {
             trans.create();
         }
-        if (scopeFunc.constructor === AsyncFunction) {
-            incrementExpectedAwaits();
-        }
+        incrementExpectedAwaits();
         var returnValue;
-        var promiseFollowed = Promise$1.follow(function () {
+        var promiseFollowed = DexiePromise.follow(function () {
             returnValue = scopeFunc.call(trans, trans);
             if (returnValue) {
                 if (returnValue.constructor === NativePromise) {
                     var decrementor = decrementExpectedAwaits.bind(null, null);
                     returnValue.then(decrementor, decrementor);
                 }
-                else if (typeof returnValue.next === 'function' && typeof returnValue.throw === 'function') {
-                    returnValue = awaitIterator(returnValue);
+                else {
+                    decrementExpectedAwaits();
+                    if (typeof returnValue.next === 'function' && typeof returnValue.throw === 'function') {
+                        returnValue = awaitIterator(returnValue);
+                    }
                 }
+            }
+            else {
+                decrementExpectedAwaits();
             }
         }, zoneProps);
         return (returnValue && typeof returnValue.then === 'function' ?
-            Promise$1.resolve(returnValue).then(function (x) { return trans.active ?
+            DexiePromise.resolve(returnValue).then(function (x) { return trans.active ?
                 x
                 : rejection(new exceptions.PrematureCommit("Transaction committed too early. See http://bit.ly/2kdckMn")); })
             : promiseFollowed.then(function () { return returnValue; })).then(function (x) {
@@ -3644,13 +3685,9 @@ function enterTransactionScope(db, mode, storeNames, parentTransaction, scopeFun
 }
 
 function pad(a, value, count) {
-    if (!isArray(a))
-        a = [a];
-    var length = a.length;
-    var result = new Array(length + count);
-    for (var i = a.length + count - 1; i >= length; --i) {
-        result[i] = value;
-    }
+    var result = isArray(a) ? a.slice() : [a];
+    for (var i = 0; i < count; ++i)
+        result.push(value);
     return result;
 }
 function createVirtualIndexMiddleware(down) {
@@ -3725,14 +3762,28 @@ function createVirtualIndexMiddleware(down) {
                                     cursor.continue(pad(cursor.key, req.reverse ? down.MIN_KEY : down.MAX_KEY, keyTail)) :
                                     cursor.continue();
                         }
-                        return __assign({}, cursor, { continue: _continue, continuePrimaryKey: function (key, primaryKey) {
-                                cursor.continuePrimaryKey(pad(key, down.MAX_KEY, keyTail), primaryKey);
-                            }, get key() {
-                                var key = cursor.key;
-                                return keyLength === 1 ?
-                                    key[0] :
-                                    key.slice(0, keyLength);
-                            } });
+                        var virtualCursor = Object.create(cursor, {
+                            continue: { value: _continue },
+                            continuePrimaryKey: {
+                                value: function (key, primaryKey) {
+                                    cursor.continuePrimaryKey(pad(key, down.MAX_KEY, keyTail), primaryKey);
+                                }
+                            },
+                            key: {
+                                get: function () {
+                                    var key = cursor.key;
+                                    return keyLength === 1 ?
+                                        key[0] :
+                                        key.slice(0, keyLength);
+                                }
+                            },
+                            value: {
+                                get: function () {
+                                    return cursor.value;
+                                }
+                            }
+                        });
+                        return virtualCursor;
                     }
                     return table.openCursor(translateRequest(req))
                         .then(function (cursor) { return cursor && createVirtualCursor(cursor); });
@@ -3892,10 +3943,10 @@ var Dexie =               (function () {
             openCanceller: null,
             autoSchema: true
         };
-        state.dbReadyPromise = new Promise$1(function (resolve) {
+        state.dbReadyPromise = new DexiePromise(function (resolve) {
             state.dbReadyResolve = resolve;
         });
-        state.openCanceller = new Promise$1(function (_, reject) {
+        state.openCanceller = new DexiePromise(function (_, reject) {
             state.cancelOpen = reject;
         });
         this._state = state;
@@ -3907,7 +3958,7 @@ var Dexie =               (function () {
                     var state = _this._state;
                     if (state.openComplete) {
                         if (!state.dbOpenError)
-                            Promise$1.resolve().then(subscriber);
+                            DexiePromise.resolve().then(subscriber);
                         if (bSticky)
                             subscribe(subscriber);
                     }
@@ -3975,7 +4026,7 @@ var Dexie =               (function () {
     };
     Dexie.prototype._whenReady = function (fn) {
         var _this = this;
-        return this._state.openComplete || PSD.letThrough ? fn() : new Promise$1(function (resolve, reject) {
+        return this._state.openComplete || PSD.letThrough ? fn() : new DexiePromise(function (resolve, reject) {
             if (!_this._state.isBeingOpened) {
                 if (!_this._options.autoOpen) {
                     reject(new exceptions.DatabaseClosed());
@@ -4024,10 +4075,10 @@ var Dexie =               (function () {
         state.dbOpenError = new exceptions.DatabaseClosed();
         if (state.isBeingOpened)
             state.cancelOpen(state.dbOpenError);
-        state.dbReadyPromise = new Promise$1(function (resolve) {
+        state.dbReadyPromise = new DexiePromise(function (resolve) {
             state.dbReadyResolve = resolve;
         });
-        state.openCanceller = new Promise$1(function (_, reject) {
+        state.openCanceller = new DexiePromise(function (_, reject) {
             state.cancelOpen = reject;
         });
     };
@@ -4035,7 +4086,7 @@ var Dexie =               (function () {
         var _this = this;
         var hasArguments = arguments.length > 0;
         var state = this._state;
-        return new Promise$1(function (resolve, reject) {
+        return new DexiePromise(function (resolve, reject) {
             var doDelete = function () {
                 _this.close();
                 var req = _this._deps.indexedDB.deleteDatabase(_this.name);
@@ -4166,7 +4217,7 @@ props(Dexie$1, __assign({}, fullNameExceptions, {
     getDatabaseNames: function (cb) {
         return databaseEnumerator ?
             databaseEnumerator.getDatabaseNames().then(cb) :
-            Promise$1.resolve([]);
+            DexiePromise.resolve([]);
     },
     defineClass: function () {
         function Class(content) {
@@ -4184,7 +4235,7 @@ props(Dexie$1, __assign({}, fullNameExceptions, {
             try {
                 var rv = awaitIterator(generatorFn.apply(this, arguments));
                 if (!rv || typeof rv.then !== 'function')
-                    return Promise$1.resolve(rv);
+                    return DexiePromise.resolve(rv);
                 return rv;
             }
             catch (e) {
@@ -4195,7 +4246,7 @@ props(Dexie$1, __assign({}, fullNameExceptions, {
         try {
             var rv = awaitIterator(generatorFn.apply(thiz, args || []));
             if (!rv || typeof rv.then !== 'function')
-                return Promise$1.resolve(rv);
+                return DexiePromise.resolve(rv);
             return rv;
         }
         catch (e) {
@@ -4205,7 +4256,7 @@ props(Dexie$1, __assign({}, fullNameExceptions, {
     currentTransaction: {
         get: function () { return PSD.trans || null; }
     }, waitFor: function (promiseOrFunction, optionalTimeout) {
-        var promise = Promise$1.resolve(typeof promiseOrFunction === 'function' ?
+        var promise = DexiePromise.resolve(typeof promiseOrFunction === 'function' ?
             Dexie$1.ignoreTransaction(promiseOrFunction) :
             promiseOrFunction)
             .timeout(optionalTimeout || 60000);
@@ -4213,7 +4264,7 @@ props(Dexie$1, __assign({}, fullNameExceptions, {
             PSD.trans.waitFor(promise) :
             promise;
     },
-    Promise: Promise$1,
+    Promise: DexiePromise,
     debug: {
         get: function () { return debug; },
         set: function (value) {
@@ -4246,7 +4297,7 @@ props(Dexie$1, __assign({}, fullNameExceptions, {
 Dexie$1.maxKey = getMaxKey(Dexie$1.dependencies.IDBKeyRange);
 
 initDatabaseEnumerator(Dexie.dependencies.indexedDB);
-Promise$1.rejectionMapper = mapError;
+DexiePromise.rejectionMapper = mapError;
 setDebug(debug, dexieStackFrameFilter);
 
 return Dexie;
