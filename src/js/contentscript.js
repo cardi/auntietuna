@@ -328,9 +328,23 @@ case  1: // run detection
 
       // DEBUG: since we're in alpha, inject a DIV with debugging
       // information to sort out false positives
-      const stuff =
-      ` <style>
-          :host {
+
+      // create parent div element to inject
+      let debugInfoDiv = document.createElement("div");
+
+      // create div element to inject into shadow DOM
+      //
+      // in an effort to avoid using .innerHTML or .insertAdjacentHTML()
+      // we can programatically build the injected div by creating
+      // individual nodes and "building" them together, and finally
+      // attaching it to the shadow DOM.
+      //
+      // TODO there's probably a better way to do this
+      let div = document.createElement('div');
+
+      let style = document.createElement('style');
+      style.textContent =
+         `:host {
             all        : initial; /* 1st rule so subsequent properties are reset. */
             display    : block;
             background : white;
@@ -341,26 +355,35 @@ case  1: // run detection
             white-space : pre-wrap;
             word-wrap   : break-word;
             overflow-x  : auto;
-            overflow-y  : scroll;
+            overflow-y  : scroll
             border      : solid 1px #000000;
             background  : #eee;
             padding     : 1.00em 1.00em;
-          }
-        </style>
-        <div style="text-align:center;">
-        <h3>AuntieTuna thinks this site is a phishing site.</h3>
-        </div>
-        <p>It's possible that it isn't a phishing site. If it isn't,
-        could you copy and paste the following text and submit it to
-        <a href="https://auntietuna.ant.isi.edu">AuntieTuna's home page</a>?
-        Thank you!
-        <pre>${JSON.stringify(data)}</pre>
-        </p>`;
+          }`
+      div.appendChild(style);
 
-      let debugInfoDiv = document.createElement("div");
+      let header = document.createElement('div');
+      header.style.textAlign = "center";
+      let h3     = document.createElement('h3');
+      h3.textContent = "AuntieTuna thinks this site is a phishing site.";
+      header.appendChild(h3);
+      div.appendChild(header);
 
-      var div = document.createElement('div');
-      div.insertAdjacentHTML("afterbegin", stuff);
+      // this is a horrendous way of doing things
+      let p      = document.createElement('p');
+      p.appendChild(document.createTextNode("It's possible that it isn't a phishing site. If it isn't, could you copy and paste the following text and submit it to "));
+      let a      = document.createElement('a');
+      a.href = "https://auntietuna.ant.isi.edu"
+      a.textContent = "AuntieTuna's home page"
+      p.appendChild(a);
+      p.appendChild(document.createTextNode("? Thank you!"));
+      div.appendChild(p);
+
+      let pre = document.createElement('pre');
+      pre.id = "data";
+      pre.textContent = JSON.stringify(data);
+      div.appendChild(pre);
+      //////////////////////////////////////////////////////////////////
 
       let shadow = debugInfoDiv.attachShadow({mode: 'open'});
       shadow.appendChild(div);
