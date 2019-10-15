@@ -84,43 +84,40 @@ async function updateDisplaySites() {
   const result = await db.good.toArray();
   console.debug("[options/updateDisplaySites]", result);
 
-  let displayText = "<table>";
-  displayText += "<tr>";
-  displayText += '<th><label><input type="checkbox" id="selectAll" value="all"></label>';
-  displayText += "<th>domain";
-  displayText += "<th>last updated";
-  displayText += "<th>imported on";
-  displayText += "</tr>";
-  for(const entry of result) {
-    let entryText = "<tr>";
-    entryText += '<td><label><input type="checkbox" style="margin-right: 0.5em" value="'+entry.id+'">' + entry.id + '</label>';
-    entryText += '<td>' + entry.domain;
-    entryText += '<td>' + entry.last_updated;
-    entryText += '<td>' + entry.imported;
-    entryText += "</tr>";
-
-    displayText += entryText;
-  }
-  displayText += "</table>";
-
-  const sites = document.getElementById('sites');
   // remove the table
-  while (sites.firstChild) sites.removeChild(sites.firstChild);
-  // use insertAdjacentHTML in place of .innerHTML
-  sites.insertAdjacentHTML('afterbegin', displayText);
+  const tbody = document.querySelector('#tbl-sites tbody');
+  while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
 
-  // put this here for now because we need to wait for the DOM to be loaded
-  let selectAll = document.getElementById('selectAll')
-  selectAll.addEventListener('click', () => {
-    let sites = document.querySelectorAll("div#sites input");
-    let check = selectAll.checked;
-    sites.forEach( (element) => {
-      element.checked = check;
-    });
-  }, false);
+  // use templates instead of {insertAdjacentHTML, .innerHTML}
+  if ('content' in document.createElement('template')) {
+    var template = document.querySelector('#tbl-sites-row');
+    console.log(template);
 
+    for(const entry of result) {
+      let clone = document.importNode(template.content, true);
+      var td = clone.querySelectorAll("td");
 
+      let label = document.createElement('label')
+      let checkbox = document.createElement('input');
+      checkbox.type = "checkbox";
+      checkbox.style.marginRight = "0.5em";
+      checkbox.value = entry.id;
+      let text = document.createTextNode(entry.id);
 
+      td[0].appendChild(label);
+      label.appendChild(checkbox);
+      label.appendChild(text);
+
+      td[1].textContent = entry.domain;
+      td[2].textContent = entry.last_updated;
+      td[3].textContent = entry.imported;
+
+      tbody.appendChild(clone);
+    }
+  } else {
+    // TODO
+    console.error("templates not supported");
+  }
 }
 
 function updateDisplayStatus(txt) {
@@ -222,6 +219,15 @@ document.getElementById('resetHashes')
 
 document.getElementById('loadDefaultHashes')
         .addEventListener('click', () => loadDefaultHashes(), false);
+
+let selectAll = document.getElementById('selectAll')
+selectAll.addEventListener('click', () => {
+  let sites = document.querySelectorAll("div#sites input");
+  let check = selectAll.checked;
+  sites.forEach( (element) => {
+    element.checked = check;
+  });
+}, false);
 
 // for enabling/disabling debug mode
 document.getElementById('debug')

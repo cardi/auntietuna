@@ -38,6 +38,28 @@
   <fieldset>
     <legend>Manage Websites, Export Website Hashes</legend>
     <div id="sites" style="margin: 1em 1em;">
+    <table id="tbl-sites">
+      <thead>
+        <tr>
+          <th><label><input type="checkbox" id="selectAll" value="all"></label>
+          <th>domain
+          <th>last updated
+          <th>imported on
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+
+    <template id="tbl-sites-row">
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    </template>
+
     </div>
     <div style="margin: 1em 1em;">
       <button id="exportSelectedHashes">Export Selected</button>
