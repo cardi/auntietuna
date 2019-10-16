@@ -1,7 +1,7 @@
 .PHONY: all clean lint
 
 auntietuna-unsigned.xpi: src/*
-	7z a -tzip -xr\!_* -xr\!.* $@ ./src/* ./LICENSE
+	7z a -tzip -xr\!_* -xr\!.* $@ ./src/* ./LICENSE ./README.md
 
 all: %.xpi
 
