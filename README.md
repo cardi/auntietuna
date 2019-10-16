@@ -20,26 +20,16 @@ Additional information and a copy of this software its source code can
 also be found at <https://auntietuna.ant.isi.edu> or
 <https://github.com/cardi/auntietuna>.
 
-## contributing
+## quick start
 
-Contributions are welcome!
-
-We need help with the following:
-* general usage of the addon
-* finding/reporting false positives
-* porting to Google Chrome / Chromium (might require polyfill libraries)
-* **TODO**
-
-Feel free to open a [pull request](https://github.com/cardi/auntietuna/pulls)
-or an [issue](https://github.com/cardi/auntietuna/issues), or send email
-to <calvin@isi.edu> with questions, bugs, feature requests, patches, and
-any notes on your usage.
+Get up and running with the
+[quick start guide](https://auntietuna.ant.isi.edu/documentation/quick-start).
 
 ## installation
 
 You can install the AuntieTuna browser extension via sideloading.
 
-[Information about the requested permissions](#TODO).
+[Information about the requested permissions](https://auntietuna.ant.isi.edu/documentation/faq).
 
 ### firefox
 
@@ -71,13 +61,13 @@ The following instructions are for v0.0.3 and earlier:
 
 ### development (firefox)
 
-Running the development version will launch Firefox with a clean,
-temporary profile with AuntieTuna pre-installed that is independent of
-existing profiles you may have.
+Running the development version of AuntieTuna using `web-ext` will
+launch Firefox with a clean, temporary profile with AuntieTuna
+pre-installed that is independent of existing profiles you may have.
 
 Data is ***not saved*** after you close Firefox! (You can uncomment the
-line containing `--keep-profile-changes` if you want a persistent
-profile.)
+line in [`run.sh`](./run.sh) containing `--keep-profile-changes` if you
+want a persistent profile.)
 
 1. Install Mozilla Firefox
 2. Install `web-ext`
@@ -85,9 +75,10 @@ profile.)
 4. (optional) In `run.sh`, modify the paths to `FIREFOX_BIN` and `FIREFOX_DIST`
 5. Execute `run.sh`
 
-Optionally, you can build an unsigned `.xpi` by running `make` at the
-root of the repository. The unsigned extension can be installed on
-Nightly / Developer editions of Firefox (see next subsection).
+You can also build an unsigned `.xpi` by running `make` at the root of
+the repository. The unsigned extension can be installed on Firefox
+[Nightly](https://www.mozilla.org/en-US/firefox/nightly/all/) or
+[Developer](https://www.mozilla.org/en-US/firefox/developer/).
 
 #### firefox nightly / developer edition
 
@@ -104,7 +95,8 @@ You can now load an unsigned addon from a file.
 
 ### development (chrome / chromium)
 
-**TODO**
+**TODO** AuntieTuna has not yet been ported or tested on Chromium-based
+browsers.
 
 ## usage
 
@@ -116,6 +108,21 @@ phish or not. If it is, you'll be prevented from clicking through.
 
 **NOTE**: Software is in ALPHA stage! There *might* be false positives
 and/or broken websites. Please send feedback to <calvin@isi.edu>.
+
+## contributing
+
+Contributions are welcome!
+
+We generally need help with the following:
+* general usage of the addon
+* finding/reporting false positives
+* porting to Google Chrome / Chromium
+* [and more...](https://auntietuna.ant.isi.edu/documentation/developing/)
+
+Feel free to open a [pull request](https://github.com/cardi/auntietuna/pulls)
+or an [issue](https://github.com/cardi/auntietuna/issues), or send email
+to <calvin@isi.edu> with questions, bugs, feature requests, patches, and
+any notes on your usage.
 
 ## libraries used
 
