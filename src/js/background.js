@@ -263,16 +263,25 @@ db.on('ready', async () => {
 browser.runtime.onMessage.addListener(handleMessage);
 
 // debugging messages
-//console.debug(await db.good.toArray());
-let openPreferencesPage = browser.tabs.create({
-                            url: browser.runtime.getURL("options.html")
-                          });
-openPreferencesPage.then(tab => { console.log("[bg] opened", tab.id) }, onError);
+storage.get("debug").then( (result) => {
+  if("debug" in result) {
+    console.debug("[cs/get] debug =", result.debug);
+    if(result.debug === true) {
+      //console.debug(await db.good.toArray());
+      let openPreferencesPage = browser.tabs.create({
+                                  url: browser.runtime.getURL("options.html")
+                                });
+      openPreferencesPage.then(tab => { console.log("[bg] opened", tab.id) }, onError);
 
-// test module import
-console.log("[bg] testing imported variable:", testExportText);
-console.assert("lorem ipsum" == testExportText, { textExportText: testExportText } );
-/////////////////////
+      // test module import
+      console.log("[bg] testing imported variable:", testExportText);
+      console.assert("lorem ipsum" == testExportText, { textExportText: testExportText } );
+      /////////////////////
+    }
+  } else {
+    console.debug("[cs/get] key 'debug' doesn't exist in result");
+  }
+}, onError);
 
 console.log("[bg] done.");
 ////////////////////////////////////////////////////////////////////////
