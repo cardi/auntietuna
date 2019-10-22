@@ -96,7 +96,7 @@ async function updateDisplaySites() {
   // use templates instead of {insertAdjacentHTML, .innerHTML}
   if ('content' in document.createElement('template')) {
     var template = document.querySelector('#tbl-sites-row');
-    console.log(template);
+    //console.log(template);
 
     for(const entry of result) {
       let clone = document.importNode(template.content, true);
