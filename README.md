@@ -40,24 +40,34 @@ If you saved the `.xpi` file to your computer, you can
 [install the add-on from the file](https://extensionworkshop.com/documentation/publish/distribute-sideloading/#install-addon-from-file).
 
 **Temporary Installation**:
-To install the latest development snapshot (temporarily) from git:
-1. Go to `about:debugging#/runtime/this-firefox`
-2. Click on "Load Temporary Add-on..."
-3. Browse to and open `auntietuna/src/manifest.json`
-4. AuntieTuna is temporarily installed until you exit the browser
+To install the latest development snapshot (temporarily) from git or a
+[release](https://github.com/cardi/auntietuna/releases/latest) (`.zip`
+or `.tar.gz`):
+1. Clone the git repository or download a release tarball
+2. In Firefox, go to `about:debugging#/runtime/this-firefox`
+3. Click on "Load Temporary Add-on..."
+4. Browse to and open `auntietuna/src/manifest.json`
+5. AuntieTuna is now temporarily installed until you exit the browser
 
-### chrome / chromium
+You need to repeat these installation steps after you restart the
+browser. Known-good data is deleted on exit.
 
-*v0.0.4+ has not yet been tested for compatibility with Google Chrome /
-Chromium.*
+### chromium / chromium-based browsers (chrome, brave)
 
-The following instructions are for v0.0.3 and earlier:
+**General Installation**:
+Install from the Chrome Web Store (TODO).
 
-1. Go to Extensions (Window -> Extensions) or "chrome://extensions"
-2. Click on "Load unpacked extensions..."
-3. Select the directory containing this extension and click on "Select"
-4. To view debugging information for the extension on a visited webpage,
-   go to View -> Developer -> JavaScript Console
+**Sideloading Instructions**:
+1. Clone the git repository or download and extract a release tarball
+2. Go to Extensions (Window -> Extensions) or "chrome://extensions"
+3. Toggle "Developer mode" in the top right to "On"
+4. Click on "Load unpacked"
+5. Select the directory containing AuntieTuna and click "Open"
+
+AuntieTuna is now installed.
+
+Note that you need to update manually when new versions are released by
+repeating the steps above.
 
 ### development (firefox)
 
