@@ -55,6 +55,12 @@ table th {
 	background-color: rgb(226, 226, 226) ;
 }
 
+table tr:nth-child(even) {
+	background-color: rgb(240, 240, 240) ;
+}
+
+table th, td { padding: 5px; }
+
 input, button {
   border-radius: 2px;
   cursor: pointer;
