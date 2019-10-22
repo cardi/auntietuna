@@ -56,6 +56,11 @@ async function exportSelectedHashes() {
   }
 }
 
+async function deleteHash(id) {
+  await db.good.where('id').equals(id).delete();
+  await updateDisplaySites();
+}
+
 async function resetHashes() {
   await db.good.clear();
   updateDisplayStatus("Database cleared!");
@@ -107,10 +112,18 @@ async function updateDisplaySites() {
       td[0].appendChild(label);
       label.appendChild(checkbox);
       label.appendChild(text);
+      /**/
 
-      td[1].textContent = entry.domain;
-      td[2].textContent = entry.last_updated;
-      td[3].textContent = entry.imported;
+      // TODO replace with a trash can icon
+      let delBtn = document.createElement('button');
+      delBtn.textContent = "Delete";
+      delBtn.onclick = function() { deleteHash(entry.id); };
+      td[1].appendChild(delBtn);
+
+      /**/
+      td[2].textContent = entry.domain;
+      td[3].textContent = entry.last_updated;
+      td[4].textContent = entry.imported;
 
       tbody.appendChild(clone);
     }

@@ -68,6 +68,11 @@ input, button {
   padding: 0.5em 1em;
 }
 
+table#tbl-sites button {
+  padding: 5px;
+  font-size: 0.75rem;
+}
+
 button:hover {
 
 }
