@@ -28,7 +28,8 @@
   "content_scripts": [
     {
       "matches"    : ["http://*/*", "https://*/*"],
-      "js"         : ["lib/sha256.min.js"
+      "js"         : ["lib/browser-polyfill.js"
+                    , "lib/sha256.min.js"
                     , "lib/FileSaver.min.js"
                     , "js/util.js"
                     , "js/contentscript.js"],
@@ -45,8 +46,8 @@
   "options_ui": {
     "page"          : "options.html",
     "open_in_tab"   : true,
-    "browser_style" : true,
-    "chrome_style"  : true
+    "browser_style" : false,
+    "chrome_style"  : false
   },
 
   "permissions": [

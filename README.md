@@ -126,12 +126,13 @@ any notes on your usage.
 
 ## libraries used
 
-| name        | link                                     | license        |
-| ---         | ---                                      | ---            |
-| CryptoJS    | http://code.google.com/p/crypto-js       | `BSD-3-Clause` |
-| Dexie.js    | https://github.com/dfahlander/Dexie.js/  | `Apache-2.0`   |
-| FileSaver   | https://github.com/eligrey/FileSaver.js  | `MIT`          |
-| shield icon | https://github.com/feathericons/feather  | `MIT`          |
+| name                                | link                                            | license        |
+| ---                                 | ---                                             | ---            |
+| CryptoJS                            | http://code.google.com/p/crypto-js              | `BSD-3-Clause` |
+| Dexie.js                            | https://github.com/dfahlander/Dexie.js/         | `Apache-2.0`   |
+| FileSaver                           | https://github.com/eligrey/FileSaver.js         | `MIT`          |
+| shield icon                         | https://github.com/feathericons/feather         | `MIT`          |
+| WebExtension `browser` API Polyfill | https://github.com/mozilla/webextension-polyfill| `MPL-2.0`      |
 
 ## copyright
 
