@@ -60,32 +60,57 @@ async function loadHashURLList(urls) {
     let hashes_url = urls[i];
 
     console.debug("[bg/loadHashURLList] processing URL:", hashes_url);
-    let entry = await loadHashURL(hashes_url);
-    console.log("[bg/loadHashURLList] entry from URL:", entry);
+    let entries = await loadHashURL(hashes_url);
+    console.log("[bg/loadHashURLList] entries from URL:", entries);
 
-    // TODO validate entry: { domain: , last_updated: , hashes: }
-    if(entry != null) {
-      entry.last_updated = (new Date(entry.last_updated)).toJSON();
-      entry.imported = (new Date()).toJSON();
+    if(entries != null) {
+      // is `entries` a single entry or an array?
+      // if `entries` is a single entry, then create an array of one element to
+      // make life easier when processing
+      if(Array.isArray(entries) === false) {
+        entries = [entries];
+      }
 
-      // add entry to db. dupes are allowed here, but to what extent?
-      await db.good.add(entry).catch((error) => {
-        console.error("error in adding:", error);
-        return Promise.reject(error);
-      });
+      // `entries` can contain multiple "known-good entry",
+      // so we'll iterate over the array and add them one at a time.
+      for (let j=0; j<entries.length; j++) {
+        let entry = entries[j];
 
-      // add domain to whitelist
-      storage.get("whitelist").then( items => {
-        console.debug("[bg] whitelist [1]:", items["whitelist"]);
+        // TODO validate entry
+        /*
+            { domain: , last_updated: , hashes: , description: }
 
-        if (items['whitelist'] == null) { items['whitelist'] = []; }
-        if (items['whitelist'].constructor === Array) {
-          items['whitelist'] = (items['whitelist'].concat(entry.domain)).filter(util.unique);
-          storage.set(items).then( () => {
-            console.debug("[bg] whitelist [2]:", items['whitelist']);
-          }, onError);
+           if we're importing a list of entries that was previously exported,
+           we need to "clean" it a bit before importing (e.g., "imported" and
+           "id").
+        */
+        entry.last_updated = (new Date(entry.last_updated)).toJSON();
+        entry.imported = (new Date()).toJSON();
+
+        // we'll let the db auto-increment this
+        if ('id' in entry) {
+          delete entry['id'];
         }
-      }, onError);
+
+        // add entry to db. dupes are allowed here, but to what extent?
+        await db.good.add(entry).catch((error) => {
+          console.error("error in adding:", error);
+          return Promise.reject(error);
+        });
+
+        // add domain to whitelist
+        storage.get("whitelist").then( items => {
+          console.debug("[bg] whitelist [1]:", items["whitelist"]);
+
+          if (items['whitelist'] == null) { items['whitelist'] = []; }
+          if (items['whitelist'].constructor === Array) {
+            items['whitelist'] = (items['whitelist'].concat(entry.domain)).filter(util.unique);
+            storage.set(items).then( () => {
+              console.debug("[bg] whitelist [2]:", items['whitelist']);
+            }, onError);
+          }
+        }, onError);
+      }
     } else {
       // we didn't load anything, so move on
     }
