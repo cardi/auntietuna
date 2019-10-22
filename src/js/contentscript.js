@@ -300,6 +300,7 @@ case  1: // run detection
 
       var data = {
         auntietunaVersion   : manifest.version,
+        browserVersion      : navigator.userAgent,
         timestamp           : Date.now(),
         debugMode           : debug,
         visited             : document.domain,
