@@ -71,9 +71,10 @@ repeating the steps above.
 
 ### development (firefox)
 
-Running the development version of AuntieTuna using `web-ext` will
-launch Firefox with a clean, temporary profile with AuntieTuna
-pre-installed that is independent of existing profiles you may have.
+Running the development version of AuntieTuna using [`run.sh`](./run.sh)
+(a wrapper around `web-ext`) will launch Firefox with a clean, temporary
+profile with AuntieTuna pre-installed that is independent of existing
+profiles you may have.
 
 Data is ***not saved*** after you close Firefox! (You can uncomment the
 line in [`run.sh`](./run.sh) containing `--keep-profile-changes` if you
@@ -103,10 +104,23 @@ enforcement](https://wiki.mozilla.org/Add-ons/Extension_Signing#FAQ):
 
 You can now load an unsigned addon from a file.
 
-### development (chrome / chromium)
+### development (chromium)
 
-**TODO** AuntieTuna has not yet been ported or tested on Chromium-based
-browsers.
+Running the development version of AuntieTuna using
+[`run-chrome.sh`](./run-chrome.sh) (a wrapper around `web-ext`) will
+launch Chromium with a clean, temporary profile with AuntieTuna
+pre-installed that is independent of existing profiles you may have.
+
+Data is ***not saved*** after you close Chromium!
+
+1. Install Chromium
+2. Install `web-ext`
+3. Clone this repository: `git clone https://github.com/cardi/auntietuna.git`
+4. (optional) In `chrome-run.sh`, modify the paths to `CHROMIUM_BIN`
+5. Execute `run-chrome.sh`
+
+The latest git commit of AuntieTuna can also be installed manually by
+following the "[Sideloading Instructions](#chromium--chromium-based-browsers-chrome-brave)".
 
 ## usage
 
