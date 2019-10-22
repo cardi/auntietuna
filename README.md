@@ -27,7 +27,10 @@ Get up and running with the
 
 ## installation
 
-You can install the AuntieTuna browser extension via sideloading.
+You can install the AuntieTuna browser extension for Mozilla Firefox
+and Chromium-based browsers (Chromium, Google Chrome, Brave).
+
+Find the instructions for your browser below.
 
 [Information about the requested permissions](https://auntietuna.ant.isi.edu/documentation/faq).
 
