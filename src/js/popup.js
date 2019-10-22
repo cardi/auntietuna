@@ -1,8 +1,16 @@
-/* SPDX-License-Identifier: GPL-3.0-or-later */
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 'use strict';
 
 (async function(){
+
+// global variables
+let storage = browser.storage.local;
+
+// function defs
+function onError(error) {
+  console.error("[popup]", `${error}`);
+}
 
 async function getCurrentTab() {
   const queryInfo = {
@@ -107,6 +115,15 @@ function renderStatus(statusText) {
 
 ////////////////////////////////////////////////////////////////////////
 // entry point /////////////////////////////////////////////////////////
+
+// enable debug button
+storage.get("debug").then( (result) => {
+  if("debug" in result) {
+    if(result.debug === true) {
+      document.getElementById('download').style.display = "block";
+    }
+  }
+}, onError);
 
 // add event listeners to popup.html
 
