@@ -16,8 +16,8 @@ AuntieTuna can be found online:
 > ([BibTeX](https://ant.isi.edu/bib/Ardi16a.html),
 > [PDF](https://www.isi.edu/%7ejohnh/PAPERS/Ardi16a.pdf))
 
-Additional information and a copy of this software its source code can
-also be found at <https://auntietuna.ant.isi.edu> or
+Additional information and a copy of this software and its source code
+can also be found at <https://auntietuna.ant.isi.edu> or
 <https://github.com/cardi/auntietuna>.
 
 ## quick start
