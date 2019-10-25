@@ -34,6 +34,24 @@ Find the instructions for your browser below.
 
 [Information about the requested permissions](https://auntietuna.ant.isi.edu/documentation/faq).
 
+### chromium / chromium-based browsers (chrome, brave)
+
+**General Installation**:
+Install from the
+[Chrome Web Store](https://chrome.google.com/webstore/detail/auntietuna/alichgeikcnmpjhknildaacknjcoecfb).
+
+**Sideloading Instructions**:
+1. Clone the git repository or download and extract a release tarball
+2. Go to Extensions (Window -> Extensions) or "chrome://extensions"
+3. Toggle "Developer mode" in the top right to "On"
+4. Click on "Load unpacked"
+5. Select the directory containing AuntieTuna and click "Open"
+
+AuntieTuna is now installed.
+
+Note that you need to update manually when new versions are released by
+repeating the steps above.
+
 ### firefox
 
 **General Installation**:
@@ -54,24 +72,6 @@ or `.tar.gz`):
 
 You need to repeat these installation steps after you restart the
 browser. Known-good data is deleted on exit.
-
-### chromium / chromium-based browsers (chrome, brave)
-
-**General Installation**:
-Install from the
-[Chrome Web Store](https://chrome.google.com/webstore/detail/auntietuna/alichgeikcnmpjhknildaacknjcoecfb).
-
-**Sideloading Instructions**:
-1. Clone the git repository or download and extract a release tarball
-2. Go to Extensions (Window -> Extensions) or "chrome://extensions"
-3. Toggle "Developer mode" in the top right to "On"
-4. Click on "Load unpacked"
-5. Select the directory containing AuntieTuna and click "Open"
-
-AuntieTuna is now installed.
-
-Note that you need to update manually when new versions are released by
-repeating the steps above.
 
 ### development (firefox)
 
@@ -142,9 +142,8 @@ and/or broken websites. Please send feedback to <calvin@isi.edu>.
 Contributions are welcome!
 
 We generally need help with the following:
-* general usage of the addon
+* general usage of the addon on multiple browsers
 * finding/reporting false positives
-* porting to Google Chrome / Chromium
 * [and more...](https://auntietuna.ant.isi.edu/documentation/developing/)
 
 Feel free to open a [pull request](https://github.com/cardi/auntietuna/pulls)
