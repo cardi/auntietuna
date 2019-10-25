@@ -58,7 +58,8 @@ browser. Known-good data is deleted on exit.
 ### chromium / chromium-based browsers (chrome, brave)
 
 **General Installation**:
-Install from the Chrome Web Store (TODO).
+Install from the
+[Chrome Web Store](https://chrome.google.com/webstore/detail/auntietuna/alichgeikcnmpjhknildaacknjcoecfb).
 
 **Sideloading Instructions**:
 1. Clone the git repository or download and extract a release tarball
