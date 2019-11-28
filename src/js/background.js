@@ -7,7 +7,8 @@ import {db, testExportText} from '/js/db.js';
 (async function(){
 
 const manifest = browser.runtime.getManifest();
-const storage = browser.storage.local;
+const storage  = browser.storage.local;
+let DEBUG      = false;
 
 // function defs ///////////////////////////////////////////////////////
 function onError(error) {
