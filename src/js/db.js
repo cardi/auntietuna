@@ -14,15 +14,9 @@ db.version(1).stores({
   good: '++id, domain, *hashes'
 });
 
+// open db here to fire off 'ready' events
 db.open();
-
-db.on('ready', () => {
-  console.log("[db] ready fired!");
-});
-
 
 //db.good.count( (count) => {
 //  console.log("[db] count =", count);
 //});
-
-console.log("[db] done.");
