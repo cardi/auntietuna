@@ -2,8 +2,6 @@
 
 'use strict';
 
-console.debug("[cs] begin");
-
 const DebugOptions = {
   "None"               : 0,
   "AlwaysRunDetection" : 1 << 0,
@@ -16,43 +14,45 @@ let storage = browser.storage.local,
 		runMode = -1,
     shouldCrawl = 0,
     shouldRun = -1,
+    DEBUG = false;
     debug = DebugOptions.None;
 
 // set debug options
 storage.get("debug").then( (result) => {
   if("debug" in result) {
-    console.debug("[cs/get] debug =", result.debug);
+    DEBUG && console.debug("[cs/get] debug =", result.debug);
     if(result.debug === true) {
+    DEBUG = true;
     debug = debug | DebugOptions.AlwaysRunDetection;
     debug = debug | DebugOptions.NoRedirectOnMatch;
     debug = debug | DebugOptions.Verbose;
     }
   } else {
-    console.debug("[cs/get] key 'debug' doesn't exist in result");
+    DEBUG && console.debug("[cs/get] key 'debug' doesn't exist in result");
   }
 }, onError);
 
 // function defs
 function onError(error) {
-  console.error("[cs]", `${error}`);
+  DEBUG && console.error("[cs]", `${error}`);
 }
 
 function onGetWhitelist(items) {
-  console.info("[cs/onGetWhitelist] document domain:", document.domain);
+  DEBUG && console.info("[cs/onGetWhitelist] document domain:", document.domain);
 
   // sometimes we have nothing loaded in db (and thus no whitelist)
   if (typeof items === 'undefined'
         || items === null
         || !("whitelist" in items))
   {
-    console.info("[cs/onGetWhitelist] whitelist doesn't exist => running checks");
+    DEBUG && console.info("[cs/onGetWhitelist] whitelist doesn't exist => running checks");
 		runMode = 1;
     shouldRun = 1;
     return;
   }
 
   let whitelisted_domains = items['whitelist'];
-  console.info("[cs/onGetWhitelist] whitelist:", `${whitelisted_domains}`);
+  DEBUG && console.info("[cs/onGetWhitelist] whitelist:", `${whitelisted_domains}`);
 
   // whitelisting needs to be done carefully: phish will have
   // "paypal.com" as a subdomain to trick users
@@ -60,7 +60,7 @@ function onGetWhitelist(items) {
   // TODO consider subdomains vs. domains: www.paypal.com vs. paypal.com
   //
   if(whitelisted_domains.indexOf(document.domain) != -1) {
-    console.info("[cs/onGetWhitelist] domain in whitelist => *not* running checks");
+    DEBUG && console.info("[cs/onGetWhitelist] domain in whitelist => *not* running checks");
 		runMode = 0;
     shouldRun = 0;
 
@@ -92,7 +92,7 @@ function onGetWhitelist(items) {
         }
       });//*/
   } else {
-    console.info("[cs/onGetWhitelist] domain *not* in whitelist => running checks");
+    DEBUG && console.info("[cs/onGetWhitelist] domain *not* in whitelist => running checks");
 		runMode = 1;
     shouldRun = 1;
   }
@@ -107,7 +107,7 @@ function onGetWhitelist(items) {
      ,"website"         : location.href
      ,"domain"          : document.domain
   };
-  console.debug("[cs/onGetWhitelist]", `${JSON.stringify(debug_info)}`);
+  DEBUG && console.debug("[cs/onGetWhitelist]", `${JSON.stringify(debug_info)}`);
 }
 
 // TODO put a red border around matches (for debugging/info?)
@@ -144,7 +144,7 @@ function chunkAndHash(regex, content) {
     // only do this for chunk sizes >= 30 otherwise we will get
     // tons of false positives
     if((e - b + 1) < 30) {
-      console.debug("[cs/chunkAndHash] skipping `" + content.substring(b,e) + "`");
+      DEBUG && console.debug("[cs/chunkAndHash] skipping `" + content.substring(b,e) + "`");
       return;
     }
 
@@ -152,7 +152,7 @@ function chunkAndHash(regex, content) {
 
     hash_vector.push(h.toString(CryptoJS.enc.Hex));
     if (debug & DebugOptions.Verbose) {
-      console.debug(b + "-" + e + ": " + h + " `" + content.substring(b,e) + "`");
+      DEBUG && console.debug(b + "-" + e + ": " + h + " `" + content.substring(b,e) + "`");
     }
   });
 
@@ -175,7 +175,7 @@ function getCleanedDomHtml() {
 //                      .trim());
 
   if (debug & DebugOptions.Verbose ) {
-    console.debug("[cs/getCleanedDomHtml] cleaned_html:", cleaned_html);
+    DEBUG && console.debug("[cs/getCleanedDomHtml] cleaned_html:", cleaned_html);
   }
 
   return cleaned_html;
@@ -191,19 +191,19 @@ function hashEverythingAndReturn(content) {
 async function handleMessage(request, sender, sendResponse) {
   // who are we getting the message from?
   if (sender.tab != null) {
-    console.log("[cs/handleMessage] request from tab", sender.tab.id, ":", request.action);
+    DEBUG && console.log("[cs/handleMessage] request from tab", sender.tab.id, ":", request.action);
   } else {
-    console.log("[cs/handleMessage] request:", request.action);
+    DEBUG && console.log("[cs/handleMessage] request:", request.action);
   }
 
   switch(request.action) {
   case "log":
-    console.log("[cs/handleMessage/log]", request.msg);
+    DEBUG && console.log("[cs/handleMessage/log]", request.msg);
     return new Promise(resolve => resolve({response: "ok"}));
     break;
   ////////////////////////////////////
   case "request_dom":
-    console.log("[cs/handleMessage/requestDom] processing");
+    DEBUG && console.log("[cs/handleMessage/requestDom] processing");
 
     var dom = getCleanedDomHtml();
     var dom_hashes = hashEverythingAndReturn(dom);
@@ -219,7 +219,7 @@ async function handleMessage(request, sender, sendResponse) {
     break;
   ////////////////////////////////////
   default:
-    console.log("[cs/handleMessage] received unknown action:", request.action);
+    DEBUG && console.log("[cs/handleMessage] received unknown action:", request.action);
     return new Promise(resolve => resolve({response: ""}));
     break;
   }
@@ -247,16 +247,16 @@ if ( debug & DebugOptions.AlwaysRunDetection ) { runMode = 1; }
 
 switch ( runMode ) {
 case -1: // should never get here
-  console.error("[cs] runMode:", runMode, "=> something went wrong");
+  DEBUG && console.error("[cs] runMode:", runMode, "=> something went wrong");
   return;
 case  0: // whitelisted, do nothing
-  console.log("[cs] runMode:", runMode, "=> whitelisted site");
+  DEBUG && console.log("[cs] runMode:", runMode, "=> whitelisted site");
   return;
 case  1: // run detection
   if ( debug & DebugOptions.AlwaysRunDetection  ) {
-    console.log("[cs] runMode:", runMode, "=> debug enabled, run detection");
+    DEBUG && console.log("[cs] runMode:", runMode, "=> debug enabled, run detection");
   } else {
-    console.log("[cs] runMode:", runMode, "=> unknown site, run detection");
+    DEBUG && console.log("[cs] runMode:", runMode, "=> unknown site, run detection");
   }
 
   // 2016-01-11 method #1: hash checks in cs-end
@@ -275,7 +275,7 @@ case  1: // run detection
 
   var dom = getCleanedDomHtml();
   var dom_hashes = hashEverythingAndReturn(dom);
-	console.debug("[cs/1] dom_hashes:", dom_hashes);
+	DEBUG && console.debug("[cs/1] dom_hashes:", dom_hashes);
 
   // TODO send a Set of a hashes (vs. array)
   var msgSend = browser.runtime.sendMessage({
@@ -284,7 +284,7 @@ case  1: // run detection
                 });
 
   msgSend.then( msgResp => {
-    console.log("[cs/1] check_hashes response:", msgResp);
+    DEBUG && console.log("[cs/1] check_hashes response:", msgResp);
 
     // TODO reporting false positives
     // TODO sane logging for debugging/experimental data collection
@@ -292,7 +292,7 @@ case  1: // run detection
     // site is possibly a phish
     if (msgResp.number_matched_hashes > 0) {
 
-      console.log("[cs/1] site is suspected phish.");
+      DEBUG && console.log("[cs/1] site is suspected phish.");
 
       let suggested = Object.keys(msgResp.domains_and_matches);
 
@@ -315,8 +315,8 @@ case  1: // run detection
 
       // don't redirect if we have DebugOption enabled
       if (debug & DebugOptions.NoRedirectOnMatch) {
-        console.debug("[cs/1] data:", data);
-        console.debug("[cs/1] redirectUrl:", redirectUrl);
+        DEBUG && console.debug("[cs/1] data:", data);
+        DEBUG && console.debug("[cs/1] redirectUrl:", redirectUrl);
       } else {
         // redirect by sending a request to background
         var msgSendRedirect = browser.runtime.sendMessage({
@@ -401,7 +401,7 @@ case  1: // run detection
 
       document.body.insertBefore(debugInfoDiv, document.body.firstChild);
     } else {
-      console.log("[cs/1] site is not suspected phish");
+      DEBUG && console.log("[cs/1] site is not suspected phish");
     }
   }, onError);
 
@@ -417,11 +417,11 @@ case  1: // run detection
   //*/
   return;
 case  2: // recrawl page due to expiration
-  console.log("[cs] runMode:", runMode, "=> refresh crawl");
+  DEBUG && console.log("[cs] runMode:", runMode, "=> refresh crawl");
 
   var dom = getCleanedDomHtml();
   var dom_hashes = hashEverythingAndReturn(dom);
-	console.debug("[cs/3] dom_hashes:", dom_hashes);
+	DEBUG && console.debug("[cs/3] dom_hashes:", dom_hashes);
 
   // TODO send a Set of a hashes (vs. array)
 
