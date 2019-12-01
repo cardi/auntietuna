@@ -11,7 +11,7 @@ const storage  = browser.storage.local;
 let DEBUG      = false;
 
 // function defs ///////////////////////////////////////////////////////
-function onError(error) { console.error("[options]", `${error}`); }
+function onError(error) { DEBUG && console.error("[options]", `${error}`); }
 
 async function exportHashes(ids) {
   let result = [];
@@ -36,7 +36,7 @@ async function exportHashes(ids) {
   let url = window.URL.createObjectURL(blob);
   let name = `hashes-${date.toJSON()}.json`;
 
-  console.log("[options/exportHashes]", "exporting to", name);
+  DEBUG && console.log("[options/exportHashes]", "exporting to", name);
 
   // use FileSaver to save file
   saveAs(blob, name);
@@ -51,7 +51,7 @@ async function exportSelectedHashes() {
       ids.push(element.value);
     }
   });
-  console.log("[options/exportSelectedHashes] export checked:", ids);
+  DEBUG && console.log("[options/exportSelectedHashes] export checked:", ids);
   if(ids.length != 0) {
     exportHashes(ids);
   }
@@ -88,7 +88,7 @@ function dragover(e) { e.stopPropagation(); e.preventDefault(); }
 // TODO add link to each row to display hashes
 async function updateDisplaySites() {
   const result = await db.good.toArray();
-  console.debug("[options/updateDisplaySites]", result);
+  DEBUG && console.debug("[options/updateDisplaySites]", result);
 
   // remove the table
   const tbody = document.querySelector('#tbl-sites tbody');
@@ -130,7 +130,7 @@ async function updateDisplaySites() {
     }
   } else {
     // TODO
-    console.error("templates not supported");
+    DEBUG && console.error("templates not supported");
   }
 }
 
@@ -145,7 +145,7 @@ function loadDefaultHashes() {
     if (/(.json)$/.test(hashes_url)) {
       hashes_list.push(hashes_url);
     } else {
-      console.log("[options/loadDefaultHashes] ignoring processing:", hashes_list_entry);
+      DEBUG && console.log("[options/loadDefaultHashes] ignoring processing:", hashes_list_entry);
     }
   }
 
@@ -158,7 +158,7 @@ function loadDefaultHashes() {
 
     // process response or display error message (`importFileStatus`)
     msgSendImport.then( async msgResp => {
-      console.log("[options/loadDefaultHashes] response from background:", msgResp.response);
+      DEBUG && console.log("[options/loadDefaultHashes] response from background:", msgResp.response);
 
       updateDisplayStatus(`Files ${JSON.stringify(manifest.web_accessible_resources)} successfully imported!`);
       await updateDisplaySites();
@@ -169,10 +169,10 @@ function loadDefaultHashes() {
 // back-end functions for UI elements
 async function importFiles(fileList) {
   if (fileList == null) {
-    console.log("[options/importFiles] fileList is null, returning");
+    DEBUG && console.log("[options/importFiles] fileList is null, returning");
     return;
   }
-  console.debug("[options/importFiles]", fileList);
+  DEBUG && console.debug("[options/importFiles]", fileList);
 
   // build object URLs to send to background script
   // XXX do we validate here or in bg?
@@ -183,7 +183,7 @@ async function importFiles(fileList) {
     fileListURLs.push(objectURL);
     fileListNames.push(fileList[i].name);
   }
-  console.debug("[options/importFiles] fileListURL =", fileListURLs);
+  DEBUG && console.debug("[options/importFiles] fileListURL =", fileListURLs);
 
   // send file URLs to background script for processing
   var msgSendImport = browser.runtime.sendMessage({
@@ -193,7 +193,7 @@ async function importFiles(fileList) {
 
   // process response or display error message (`importFileStatus`)
   msgSendImport.then( async msgResp => {
-    console.log("[options/importFiles] response from background:", msgResp.response);
+    DEBUG && console.log("[options/importFiles] response from background:", msgResp.response);
 
     const importFileStatus = document.getElementById('importFileStatus');
     importFileStatus.innerText = `Files ${JSON.stringify(fileListNames)} successfully imported!`;
@@ -214,7 +214,8 @@ async function importFiles(fileList) {
 document.addEventListener("DOMContentLoaded", restoreOptions);
 
 // get debug preference value from storage
-/*await storage.get("debug").then( (result) => {
+///*
+await storage.get("debug").then( (result) => {
   if("debug" in result) {
     if(result.debug === true) {
       // enable debugging messages
