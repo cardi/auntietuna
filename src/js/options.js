@@ -208,9 +208,25 @@ async function importFiles(fileList) {
 
 // entry point /////////////////////////////////////////////////////////
 
+// XXX need to add event listeners before `await storage.get(...)`
+// otherwise function doesn't get called.
+// TODO check behavior on chromium
+document.addEventListener("DOMContentLoaded", restoreOptions);
+
+// get debug preference value from storage
+/*await storage.get("debug").then( (result) => {
+  if("debug" in result) {
+    if(result.debug === true) {
+      // enable debugging messages
+      DEBUG = true;
+      DEBUG && console.debug("[options] result =", result);
+    }
+  }
+}, onError);//*/
+
 // test module import
-console.log("[options] testing imported variable:", testExportText);
-console.assert("lorem ipsum" == testExportText, { textExportText: testExportText } );
+DEBUG && console.log("[options] testing imported variable:", testExportText);
+DEBUG && console.assert("lorem ipsum" == testExportText, { textExportText: testExportText } );
 ///////////////////*/
 
 // add event listeners to options.html
@@ -246,31 +262,29 @@ selectAll.addEventListener('click', () => {
 // for enabling/disabling debug mode
 document.getElementById('debug')
         .addEventListener('change', (e) => {
-          console.log("[options/debug] e.target.checked =", e.target.checked);
+          DEBUG && console.log("[options/debug] e.target.checked =", e.target.checked);
           e.preventDefault();
-          storage.set({
-            debug: e.target.checked
-          });
+          storage.set({ debug: e.target.checked });
         }, false);
 
 function restoreOptions() {
 
+  DEBUG && console.debug('[options/restoreOptions] called');
+
   function onError(error) {
-    console.log(`[options/restoreOptions] Error: ${error}`);
+    DEBUG && console.log(`[options/restoreOptions] Error: ${error}`);
   }
 
   var getting = storage.get("debug");
   getting.then( (result) => {
-    console.debug("[options/restoreOptions]", result);
+    DEBUG && console.debug("[options/restoreOptions]", result);
     if("debug" in result) {
       document.getElementById('debug').checked = result.debug;
     } else {
-      console.debug("[options/restoreOptions] key 'debug' doesn't exist in result");
+      DEBUG && console.debug("[options/restoreOptions] key 'debug' doesn't exist in result");
     }
   }, onError);
 }
-
-document.addEventListener("DOMContentLoaded", restoreOptions);
 
 // QoL: subscribe to changes in the db and update the page when possible.
 // note that dexie-observable.js needs to be imported on the producer
