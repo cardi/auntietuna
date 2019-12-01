@@ -261,6 +261,7 @@ async function handleMessage(request, sender, sendResponse) {
 
 // if db is empty, load hashes from WARs to db
 db.on('ready', async () => {
+  console.log("[bg] db ready called");
   return db.good.count( async (count) => {
     if (count > 0) {
       console.log("[bg] db already has count of", count);
