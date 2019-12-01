@@ -13,3 +13,16 @@ export const db = new Dexie('auntietuna');
 db.version(1).stores({
   good: '++id, domain, *hashes'
 });
+
+db.open();
+
+db.on('ready', () => {
+  console.log("[db] ready fired!");
+});
+
+
+//db.good.count( (count) => {
+//  console.log("[db] count =", count);
+//});
+
+console.log("[db] done.");
