@@ -356,7 +356,7 @@ case  1: // run detection
             white-space : pre-wrap;
             word-wrap   : break-word;
             overflow-x  : auto;
-            overflow-y  : scroll
+            overflow-y  : scroll;
             border      : solid 1px #000000;
             background  : #eee;
             padding     : 1.00em 1.00em;
