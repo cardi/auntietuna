@@ -1,4 +1,9 @@
-# AuntieTuna
+<h1>
+<sub>
+<img src="https://raw.githubusercontent.com/cardi/auntietuna/master/src/img/auntietuna-48.png" width="38" height="38">
+</sub>
+AuntieTuna
+</h1>
 
 **AuntieTuna** is a browser extension that checks if each visited page
 is a potential phishing website based on snapshots of known good
