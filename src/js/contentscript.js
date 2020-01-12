@@ -332,6 +332,7 @@ case  1: // run detection
 
       // create parent div element to inject
       let debugInfoDiv = document.createElement("div");
+      debugInfoDiv.id = "phishing-alert-div";
 
       // create div element to inject into shadow DOM
       //
@@ -351,6 +352,21 @@ case  1: // run detection
             background : white;
           }
 
+          a {
+            font-weight: bold;
+          }
+
+          button {
+            border-radius : 2px;
+            cursor        : pointer;
+            font-size     : 1.25rem;
+            padding       : 0.5em 1em;
+          }
+
+          p {
+            text-align: center;
+          }
+
           pre {
             max-height  : 200px;
             white-space : pre-wrap;
@@ -365,37 +381,52 @@ case  1: // run detection
 
       let header = document.createElement('div');
       header.style.textAlign = "center";
-      let h3     = document.createElement('h3');
-      h3.textContent = "AuntieTuna thinks this site is a phishing site.";
-      header.appendChild(h3);
+      let title = document.createElement('h1');
+      title.textContent = "AuntieTuna thinks this is a phishing attempt.";
+      header.appendChild(title);
       div.appendChild(header);
 
       // this is a horrendous way of doing things
-      let p      = document.createElement('p');
-      p.appendChild(document.createTextNode("It's possible that it isn't a phishing site. If it isn't, could you copy and paste the following text and submit it to "));
-      let a      = document.createElement('a');
-      a.href = "https://auntietuna.ant.isi.edu"
-      a.textContent = "AuntieTuna's home page"
+      let p = document.createElement('p');
+      p.appendChild(document.createTextNode("Did we get this one wrong? "));
+
+      // build a pre-filled Google Forms link
+      let param = encodeURIComponent(JSON.stringify(data));
+      let a = document.createElement('a');
+      a.href = "https://docs.google.com/forms/d/e/1FAIpQLSc85evxkjWWUul5TBB8zRA4GQGS8Fpya5fI-14PBm4GH2gBgA/viewform?usp=pp_url&entry.1410474703=False+positive+(a+website+was+marked+as+phish+when+it+isn't)&entry.662591020=false+positive+on+a+website&entry.559542417=" + param;
+      a.textContent = "Click here to submit a bug report!";
       p.appendChild(a);
-      p.appendChild(document.createTextNode("? Thank you!"));
+
+      p.appendChild(document.createTextNode(" Thank you!"));
       div.appendChild(p);
 
       let pre = document.createElement('pre');
       pre.id = "data";
       pre.textContent = JSON.stringify(data);
       div.appendChild(pre);
+
+      // close button deletes the alert (one-time)
+      let closeP = document.createElement('p');
+      let closeBtn = document.createElement('button');
+      closeBtn.textContent = "Close";
+      closeBtn.addEventListener("click", () => {
+        document.getElementById("phishing-alert-div").remove();
+      });
+      closeP.appendChild(closeBtn);
+      div.appendChild(closeP);
+
       //////////////////////////////////////////////////////////////////
 
       let shadow = debugInfoDiv.attachShadow({mode: 'open'});
       shadow.appendChild(div);
 
-      debugInfoDiv.style.height    = "350px";
+      debugInfoDiv.style.height    = "250px";
       debugInfoDiv.style.position  = "fixed";
       debugInfoDiv.style.bottom    = "0";
       debugInfoDiv.style.left      = "50%";
       debugInfoDiv.style.width     = "75%";
       debugInfoDiv.style.padding   = "1em 1em";
-      debugInfoDiv.style.transform = "translate(-50%, -50%)";
+      debugInfoDiv.style.transform = "translate(-50%, -100%)";
       debugInfoDiv.style.zIndex    = "9999";
       debugInfoDiv.style.border    = "solid 3px black";
 
