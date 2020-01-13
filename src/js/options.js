@@ -119,54 +119,20 @@ async function updateDisplaySites() {
     spanDate.textContent = (entry.last_updated).slice(0,10);
     span.appendChild(spanDate);
 
+    // create span for our tools
+    let spanTools = document.createElement('span');
+    spanTools.className = "tools";
+
+    // tool #1: delete
+    let toolsTrash = document.createElement('img');
+    toolsTrash.src = "img/trash.svg";
+    toolsTrash.onclick = function() { deleteHash(entry.id); };
+    spanTools.appendChild(toolsTrash);
+    span.appendChild(spanTools);
+
     li.appendChild(span);
 
     listsUl.insertBefore(li, penultEntry);
-  }
-
-  ////////////////////////////////////////////////////////////////////////
-
-  // remove the table
-  const tbody = document.querySelector('#tbl-sites tbody');
-  while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
-
-  // use templates instead of {insertAdjacentHTML, .innerHTML}
-  if ('content' in document.createElement('template')) {
-    var template = document.querySelector('#tbl-sites-row');
-    //console.log(template);
-
-    for(const entry of result) {
-      let clone = document.importNode(template.content, true);
-      var td = clone.querySelectorAll("td");
-
-      let label = document.createElement('label')
-      let checkbox = document.createElement('input');
-      checkbox.type = "checkbox";
-      checkbox.style.marginRight = "0.5em";
-      checkbox.value = entry.id;
-      let text = document.createTextNode(entry.id);
-
-      td[0].appendChild(label);
-      label.appendChild(checkbox);
-      label.appendChild(text);
-      /**/
-
-      // TODO replace with a trash can icon
-      let delBtn = document.createElement('button');
-      delBtn.textContent = "Delete";
-      delBtn.onclick = function() { deleteHash(entry.id); };
-      td[1].appendChild(delBtn);
-
-      /**/
-      td[2].textContent = entry.domain;
-      td[3].textContent = entry.last_updated;
-      td[4].textContent = entry.imported;
-
-      tbody.appendChild(clone);
-    }
-  } else {
-    // TODO
-    DEBUG && console.error("templates not supported");
   }
 }
 
@@ -294,15 +260,6 @@ document.getElementById('resetHashes')
 
 document.getElementById('loadDefaultHashes')
         .addEventListener('click', () => loadDefaultHashes(), false);
-
-let selectAll = document.getElementById('selectAll')
-selectAll.addEventListener('click', () => {
-  let sites = document.querySelectorAll("div#sites input");
-  let check = selectAll.checked;
-  sites.forEach( (element) => {
-    element.checked = check;
-  });
-}, false);
 
 // for enabling/disabling debug mode
 document.getElementById('debug')
