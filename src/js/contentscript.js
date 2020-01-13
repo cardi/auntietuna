@@ -420,7 +420,7 @@ case  1: // run detection
       let shadow = debugInfoDiv.attachShadow({mode: 'open'});
       shadow.appendChild(div);
 
-      debugInfoDiv.style.height    = "250px";
+      debugInfoDiv.style.height    = "300px";
       debugInfoDiv.style.position  = "fixed";
       debugInfoDiv.style.bottom    = "0";
       debugInfoDiv.style.left      = "50%";
