@@ -9,12 +9,18 @@
 </head>
 <body>
   <header>
-  <h2>AuntieTuna &mdash; Options</h2>
+  <ul>
+    <li><img src="img/auntietuna-48.png" width="36" height="36"></li>
+    <li><a href="#manage">Known-Good</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#debug">Debug</a></li>
+  </li>
   </header>
 
   <section>
 
   <p>
+  <a class="anchor" id="import"></a>
   <fieldset>
     <legend>Import Known-Good Lists</legend>
     <p>
@@ -35,6 +41,7 @@
   </p>
 
   <p>
+  <a class="anchor" id="manage"></a>
   <fieldset>
     <legend>Manage and Export Known-Good Lists</legend>
     <div id="sites" style="margin: 1em 1em;">
@@ -69,27 +76,33 @@
     </div>
   </fieldset>
   </p>
+  </section>
 
-  <p>
-    Version: <span id="version"></span>
-  </p>
-
-  <hr>
+  <section>
+  <a class="anchor" id="about"></a>
+  <h3>About</h3>
+  <ul>
+  <li>AuntieTuna v<span id="version"></span>
+  <li><a href="https://auntietuna.ant.isi.edu">Homepage</a>
+  <li><a href="https://github.com/cardi/auntietuna/releases">Changelog</a>
+  <li><a href="https://github.com/cardi/auntietuna">Source Code (GitHub)</a>
+  </ul>
   </section>
 
   <footer>
-  <h3>Debug / Developers:</h3>
-  <p>
-    <span id="status" style="color: #006600;"></span><br>
-    <button id="resetHashes">Reset all known-good...</button>
-    <button id="loadDefaultHashes">Load initial set of known-good</button>
-  </p>
-  <p>
-    <label>
+  <a class="anchor" id="debug"></a>
+  <h3>Debug</h3>
+  <ul>
+    <li><a id="resetHashes" href="#">Reset all known-good</a></li>
+    <li><a id="loadDefaultHashes" href="#">Load initial set of known-good</a></li>
+    <li><label>
       <input type="checkbox" id="debug">
       Debug mode (ignore whitelist and run detection on every page,
       enables download hashes button)
-    </label>
+      </label></li>
+  </ul>
+  <p>
+    <span id="status" style="color: #006600;"></span>
   </p>
   </footer>
 

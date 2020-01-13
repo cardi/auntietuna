@@ -4,6 +4,7 @@ html, body {
 	margin: 0;
 	font-family: Helvetica, sans-serif;
   font-size: 18px;
+  height: 125%;
 }
 
 p {
@@ -30,9 +31,61 @@ fieldset legend {
 header {
 	background-color: black;
 	color: white;
-	line-height: 3rem;
-  padding: 0 0 0 1rem;
   margin: 0;
+  position: sticky;
+  top: 0;
+  line-height: 3.5rem;
+  vertical-align: center;
+  z-index: 10;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  padding-top: 1.00em;
+}
+
+ul li {
+  margin-left: 1.00em;
+  margin-bottom: 0.25em;
+}
+
+header ul {
+  font-size: 1.5rem;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+header ul li {
+  margin: 0;
+  height: 100%;
+  float: left;
+}
+
+header ul li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 0px 1em;
+  text-decoration: none;
+}
+
+header ul li a:hover {
+  background-color: #900;
+}
+
+a.anchor {
+  display: block;
+  position: relative;
+  top: -3.75rem;
+  visibility: hidden;
+}
+
+ul li img {
+  vertical-align: middle;
 }
 
 section, footer {
@@ -160,14 +213,8 @@ button:hover {
 	width: 140px;
 }
 
-ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-}
-
 li {
-  margin-bottom: 10px;
+  /*margin-bottom: 10px;*/
 }
 
 input[type=checkbox] {
