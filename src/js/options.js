@@ -69,6 +69,8 @@ async function resetHashes() {
 }
 
 // function defs for UI elements ///////////////////////////////////////
+
+// dropzone handling
 function handleFilePicker() {
   importFiles(this.files);
 }
@@ -83,8 +85,7 @@ function drop(e) {
   }
 }
 
-// ignore drag enter/over events
-// TODO UX: change div background on dragover
+// dropzone: ignore drag enter/over events
 function dragenter(e) { e.stopPropagation(); e.preventDefault(); }
 function dragover(e)  { e.stopPropagation(); e.preventDefault(); }
 
