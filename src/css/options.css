@@ -261,3 +261,28 @@ span.date {
 li.spacer {
   height: 1px;
 }
+
+span.tools {
+  margin: 0;
+  margin-left: 0.50em;
+  padding: 0;
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+span.tools img {
+  display: inline-block;
+  vertical-align: baseline;
+  width: auto;
+  height: 0.85rem;
+  opacity: 0.4;
+  margin: 0;
+  margin-bottom: -1px;
+}
+
+/* for dev/testing HTML layout, draw borders
+span.tools     { border: 1px solid; }
+span.tools img { border: 1px solid #00ff00; }
+li.permanent   { border: 1px solid #0000ff; }
+span.test      { border: 1px solid #0000ff; }
+/**/
