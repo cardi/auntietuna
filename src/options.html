@@ -14,7 +14,7 @@
   <header>
   <ul>
     <li><img src="img/auntietuna-48.png" width="36" height="36"></li>
-    <li><a href="#manage">Known-Good</a></li>
+    <li><a href="#manage">Known-Good Lists</a></li>
     <li><a href="#about">About</a></li>
   </li>
   </header>
@@ -22,8 +22,8 @@
   <section>
   <a class="anchor" id="manage"></a>
   <h3>Known-Good Lists</h3>
-  <ul>
-    <li><input type="checkbox"> Hello.</li>
+  <ul id="list-sites">
+    <li><input type="checkbox" value="1"> Hello.</li>
     <li>
       <input type="checkbox" style="visibility: hidden;">
       <label class="importFileLabel">
@@ -31,9 +31,9 @@
         Import from <tt style="font-size: 0.85rem">.json</tt> file...
       </label> (or drag file from desktop into this window)</li>
   </ul>
-
   <p><span id="importFileStatus" style="color: #006600"></span></p>
 
+  <!-- old -->
   <div id="sites" style="margin: 1em 1em;">
   <table id="tbl-sites">
     <thead>
@@ -58,6 +58,7 @@
     <td></td>
   </tr>
   </template>
+  <!-- end old -->
 
   </div>
   <div style="margin: 1em 1em;">
