@@ -250,7 +250,7 @@ div#importFileZone {
   z-index: 9000;
   justify-content: center;
   align-items: center;
-  background: rgba(255,0,0,.5);
+  background: rgba(0,0,255,.5);
 }
 
 span.date {
