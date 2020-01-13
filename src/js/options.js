@@ -95,9 +95,10 @@ async function updateDisplaySites() {
   const result = await db.good.toArray();
   DEBUG && console.debug("[options/updateDisplaySites]", result);
 
-  // remove all the list items
+  // remove all the list items (that aren't .permanent, for display)
   const listsUl = document.querySelector('#list-sites');
-  while (listsUl.firstChild && listsUl.firstChild.className != "permanent") {
+  while (listsUl.firstChild &&
+    (!listsUl.firstChild.classList || !listsUl.firstChild.classList.contains("permanent"))) {
     listsUl.removeChild(listsUl.firstChild);
   }
 
@@ -113,13 +114,13 @@ async function updateDisplaySites() {
     let span = document.createElement('span');
     span.textContent = " " + entry.domain + ", ";
 
+    // span element for last updated (YYYY-MM-DD)
     let spanDate = document.createElement('span');
     spanDate.className = "date";
-    // YYYY-MM-DD
     spanDate.textContent = (entry.last_updated).slice(0,10);
     span.appendChild(spanDate);
 
-    // create span for our tools
+    // span element for our tools
     let spanTools = document.createElement('span');
     spanTools.className = "tools";
 
