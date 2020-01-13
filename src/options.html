@@ -13,12 +13,10 @@
     <li><img src="img/auntietuna-48.png" width="36" height="36"></li>
     <li><a href="#manage">Known-Good</a></li>
     <li><a href="#about">About</a></li>
-    <li><a href="#debug">Debug</a></li>
   </li>
   </header>
 
   <section>
-
   <p>
   <a class="anchor" id="import"></a>
   <fieldset>
@@ -40,42 +38,41 @@
   </fieldset>
   </p>
 
-  <p>
+  </section>
+
+  <section>
   <a class="anchor" id="manage"></a>
-  <fieldset>
-    <legend>Manage and Export Known-Good Lists</legend>
-    <div id="sites" style="margin: 1em 1em;">
-    <table id="tbl-sites">
-      <thead>
-        <tr>
-          <th><label><input type="checkbox" id="selectAll" value="all"></label>
-          <th>
-          <th>domain
-          <th>last updated
-          <th>imported on
-        </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
+  <h3>Known-Good Lists</h3>
+  <div id="sites" style="margin: 1em 1em;">
+  <table id="tbl-sites">
+    <thead>
+      <tr>
+        <th><label><input type="checkbox" id="selectAll" value="all"></label>
+        <th>
+        <th>domain
+        <th>last updated
+        <th>imported on
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
 
-    <template id="tbl-sites-row">
-    <tr>
-      <td></td>
-      <td style="text-align: center;"></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    </template>
+  <template id="tbl-sites-row">
+  <tr>
+    <td></td>
+    <td style="text-align: center;"></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  </template>
 
-    </div>
-    <div style="margin: 1em 1em;">
-      <button id="exportSelectedHashes">Export Selected</button>
-      <button id="exportAllHashes">Export All</button>
-    </div>
-  </fieldset>
-  </p>
+  </div>
+  <div style="margin: 1em 1em;">
+    <button id="exportSelectedHashes">Export Selected</button>
+    <button id="exportAllHashes">Export All</button>
+  </div>
   </section>
 
   <section>
@@ -85,7 +82,7 @@
   <li>AuntieTuna v<span id="version"></span>
   <li><a href="https://auntietuna.ant.isi.edu">Homepage</a>
   <li><a href="https://github.com/cardi/auntietuna/releases">Changelog</a>
-  <li><a href="https://github.com/cardi/auntietuna">Source Code (GitHub)</a>
+  <li><a href="https://github.com/cardi/auntietuna">Source code (GitHub)</a>
   </ul>
   </section>
 
