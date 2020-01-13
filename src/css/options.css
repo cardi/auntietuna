@@ -225,8 +225,8 @@ li {
 input[type=checkbox] {
   position: relative;
   vertical-align: text-bottom;
-  transform: scale(1.25);/**/
-  bottom: 2px;
+  transform: scale(1.10);
+  bottom: 3px;
 }
 
 input[type=file] {
@@ -238,12 +238,6 @@ label.importFileLabel {
   color: #0000FF;
   text-decoration: underline;
 }
-
-/*#reset, #loadDefault {
-	font-family: sans-serif;
-	width: 100px;
-	height: 40px;
-}*/
 
 div#importFileZone {
   box-sizing: border-box;
@@ -257,4 +251,9 @@ div#importFileZone {
   justify-content: center;
   align-items: center;
   background: rgba(255,0,0,.5);
+}
+
+span.date {
+  font-size: 0.7rem;
+  color: #444;
 }
