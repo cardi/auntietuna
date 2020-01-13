@@ -44,7 +44,7 @@ async function exportHashes(ids) {
 
 async function exportSelectedHashes() {
   let ids = []
-  let sites = document.querySelectorAll("div#sites input");
+  let sites = document.querySelectorAll("ul#list-sites input");
   sites.forEach( (element) => {
     if(element.type === 'checkbox' && element.checked === true && element.value != "all") {
       //console.log("checked:", element.value);
@@ -93,6 +93,37 @@ function dragover(e)  { e.stopPropagation(); e.preventDefault(); }
 async function updateDisplaySites() {
   const result = await db.good.toArray();
   DEBUG && console.debug("[options/updateDisplaySites]", result);
+
+  // remove all the list items
+  const listsUl = document.querySelector('#list-sites');
+  while (listsUl.firstChild && listsUl.firstChild.className != "permanent") {
+    listsUl.removeChild(listsUl.firstChild);
+  }
+
+  let penultEntry = listsUl.firstChild;
+
+  for(const entry of result) {
+    var li = document.createElement('li');
+    let checkbox = document.createElement('input');
+    checkbox.type = "checkbox";
+    checkbox.value = entry.id;
+    li.appendChild(checkbox);
+
+    let span = document.createElement('span');
+    span.textContent = " " + entry.domain + ", ";
+
+    let spanDate = document.createElement('span');
+    spanDate.className = "date";
+    // YYYY-MM-DD
+    spanDate.textContent = (entry.last_updated).slice(0,10);
+    span.appendChild(spanDate);
+
+    li.appendChild(span);
+
+    listsUl.insertBefore(li, penultEntry);
+  }
+
+  ////////////////////////////////////////////////////////////////////////
 
   // remove the table
   const tbody = document.querySelector('#tbl-sites tbody');

@@ -23,14 +23,24 @@
   <a class="anchor" id="manage"></a>
   <h3>Known-Good Lists</h3>
   <ul id="list-sites">
-    <li><input type="checkbox" value="1"> ASDF</li>
-    <li class="permanent"><input type="checkbox" value="1"> Hello.</li>
+    <li><input type="checkbox"> Should not see this checkbox</li>
+    <li class="permanent"><input type="checkbox"> Test checkbox for permanence</li>
+    <li class="permanent spacer"></li>
     <li class="permanent">
       <input type="checkbox" style="visibility: hidden;">
-      <label class="importFileLabel">
+      <label id="exportSelectedHashes" class="actionLabel">
+      Export selected to file</label></li>
+    <li class="permanent">
+      <input type="checkbox" style="visibility: hidden;">
+      <label id="exportAllHashes" class="actionLabel">
+      Export all to file</label></li>
+    <li class="permanent spacer"></li>
+    <li class="permanent">
+      <input type="checkbox" style="visibility: hidden;">
+      <label class="importFileLabel actionLabel">
         <input type="file" id="importFilePicker" accept=".json" multiple>
-        Import from <tt style="font-size: 0.85rem">.json</tt> file...
-      </label> (or drag file from desktop into this window)</li>
+        Import from file</label>
+      <span class="date">(or drag file from desktop into this window)</span></li>
   </ul>
   <p><span id="importFileStatus" style="color: #006600"></span></p>
 
@@ -61,8 +71,8 @@
   </template>
   </div>
   <div style="margin: 1em 1em;">
-    <button id="exportSelectedHashes">Export Selected</button>
-    <button id="exportAllHashes">Export All</button>
+    <!--button id="exportSelectedHashes">Export Selected</button>
+    <button id="exportAllHashes">Export All</button-->
   </div>
   <!-- end old -->
   </section>

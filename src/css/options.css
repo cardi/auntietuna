@@ -233,7 +233,7 @@ input[type=file] {
   display: none;
 }
 
-label.importFileLabel {
+label.actionLabel {
   cursor: pointer;
   color: #0000FF;
   text-decoration: underline;
@@ -256,4 +256,8 @@ div#importFileZone {
 span.date {
   font-size: 0.7rem;
   color: #444;
+}
+
+li.spacer {
+  height: 1px;
 }
