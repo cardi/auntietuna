@@ -74,15 +74,19 @@ function handleFilePicker() {
 }
 
 function drop(e) {
-  e.stopPropagation();
-  e.preventDefault();
-  importFiles(e.dataTransfer.files);
+  if (true) {
+    e.dataTransfer.dropEffect = "copy";
+    e.stopPropagation();
+    e.preventDefault();
+    importFiles(e.dataTransfer.files);
+    importFileZone.style.display = "none";
+  }
 }
 
 // ignore drag enter/over events
 // TODO UX: change div background on dragover
 function dragenter(e) { e.stopPropagation(); e.preventDefault(); }
-function dragover(e) { e.stopPropagation(); e.preventDefault(); }
+function dragover(e)  { e.stopPropagation(); e.preventDefault(); }
 
 // XXX work-in-progress
 // TODO add link to each row to display hashes
@@ -240,10 +244,18 @@ document.getElementById('exportSelectedHashes')
 document.getElementById('importFilePicker')
         .addEventListener('change', handleFilePicker, false);
 
-const inputFileZone = document.getElementById('importFileZone');
-inputFileZone.addEventListener("dragenter", dragenter, false);
-inputFileZone.addEventListener("dragover", dragover, false);
-inputFileZone.addEventListener("drop", drop, false);
+// full-screen window drop zone
+window.addEventListener('dragenter', (e) => {
+  importFileZone.style.display = "flex";
+});
+const importFileZone = document.getElementById('importFileZone');
+importFileZone.addEventListener("dragenter", dragenter, false);
+importFileZone.addEventListener("dragover", dragover, false);
+importFileZone.addEventListener("drop", drop, false);
+
+importFileZone.addEventListener("dragleave", (e) => {
+  importFileZone.style.display = "none";
+});
 
 document.getElementById('resetHashes')
         .addEventListener('click', () => resetHashes(), false);

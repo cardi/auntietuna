@@ -8,6 +8,9 @@
   <link href="css/options.css" type="text/css" rel="stylesheet">
 </head>
 <body>
+  <div id="importFileZone">
+    <div style="font-size: 4rem; color: white;">drop file to import</div>
+  </div>
   <header>
   <ul>
     <li><img src="img/auntietuna-48.png" width="36" height="36"></li>
@@ -17,32 +20,20 @@
   </header>
 
   <section>
-  <p>
-  <a class="anchor" id="import"></a>
-  <fieldset>
-    <legend>Import Known-Good Lists</legend>
-    <p>
-    <div id="importFileZone" style="margin: 1em 1em; padding: 1em 1em; border: 3px dashed blue; text-align: center;">
-      <p style="display: inline; float: none; font-size: 1.35rem;">
-        <input type="file" id="importFilePicker" accept=".json" multiple>
-        <br><br>
-        Select a <code>.json</code> formatted file using the picker
-        above, or drag the file from your computer into this area to
-        import.
-      </p>
-      <p>
-        <span id="importFileStatus" style="color: #006600"></span>
-      </p>
-    </div>
-    </p>
-  </fieldset>
-  </p>
-
-  </section>
-
-  <section>
   <a class="anchor" id="manage"></a>
   <h3>Known-Good Lists</h3>
+  <ul>
+    <li><input type="checkbox"> Hello.</li>
+    <li>
+      <input type="checkbox" style="visibility: hidden;">
+      <label class="importFileLabel">
+        <input type="file" id="importFilePicker" accept=".json" multiple>
+        Import from <tt style="font-size: 0.85rem">.json</tt> file...
+      </label> (or drag file from desktop into this window)</li>
+  </ul>
+
+  <p><span id="importFileStatus" style="color: #006600"></span></p>
+
   <div id="sites" style="margin: 1em 1em;">
   <table id="tbl-sites">
     <thead>
@@ -87,7 +78,7 @@
   </section>
 
   <footer>
-  <a class="anchor" id="debug"></a>
+  <a class="anchor"></a>
   <h3>Debug</h3>
   <ul>
     <li><a id="resetHashes" href="#">Reset all known-good</a></li>

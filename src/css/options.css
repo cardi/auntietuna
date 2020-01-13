@@ -46,6 +46,10 @@ ul {
   padding-top: 1.00em;
 }
 
+section p {
+  margin-left: 1.00em;
+}
+
 ul li {
   margin-left: 1.00em;
   margin-bottom: 0.25em;
@@ -117,7 +121,7 @@ table th, td { padding: 5px; }
 input, button {
   border-radius: 2px;
   cursor: pointer;
-  font-size: 1.25rem;
+  font-size: 1rem;
   padding: 0.5em 1em;
 }
 
@@ -221,7 +225,17 @@ input[type=checkbox] {
   position: relative;
   vertical-align: text-bottom;
   transform: scale(1.25);/**/
-  bottom: 1px;
+  bottom: 2px;
+}
+
+input[type=file] {
+  display: none;
+}
+
+label.importFileLabel {
+  cursor: pointer;
+  color: #0000FF;
+  text-decoration: underline;
 }
 
 /*#reset, #loadDefault {
@@ -229,3 +243,17 @@ input[type=checkbox] {
 	width: 100px;
 	height: 40px;
 }*/
+
+div#importFileZone {
+  box-sizing: border-box;
+  display: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 9000;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,255,.4);
+}
