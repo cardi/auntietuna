@@ -80,20 +80,20 @@ browser. Known-good data is deleted on exit.
 
 ### development (firefox)
 
-Running the development version of AuntieTuna using [`run.sh`](./run.sh)
-(a wrapper around `web-ext`) will launch Firefox with a clean, temporary
-profile with AuntieTuna pre-installed that is independent of existing
-profiles you may have.
+Running the development version of AuntieTuna using
+[`run-firefox.sh`](./run-firefox.sh) (a wrapper around `web-ext`) will
+launch Firefox with a clean, temporary profile with AuntieTuna
+pre-installed that is independent of existing profiles you may have.
 
 Data is ***not saved*** after you close Firefox! (You can uncomment the
-line in [`run.sh`](./run.sh) containing `--keep-profile-changes` if you
-want a persistent profile.)
+line in [`run-firefox.sh`](./run-firefox.sh) containing
+`--keep-profile-changes` if you want a persistent profile.)
 
 1. Install Mozilla Firefox
 2. Install `web-ext`
 3. Clone this repository: `git clone https://github.com/cardi/auntietuna.git`
-4. (optional) In `run.sh`, modify the paths to `FIREFOX_BIN` and `FIREFOX_DIST`
-5. Execute `run.sh`
+4. (optional) In `run-firefox.sh`, modify the paths to `FIREFOX_BIN` and `FIREFOX_DIST`
+5. Execute `run-firefox.sh`
 
 You can also build an unsigned `.xpi` by running `make` at the root of
 the repository. The unsigned extension can be installed on Firefox
@@ -125,7 +125,7 @@ Data is ***not saved*** after you close Chromium!
 1. Install Chromium
 2. Install `web-ext`
 3. Clone this repository: `git clone https://github.com/cardi/auntietuna.git`
-4. (optional) In `chrome-run.sh`, modify the paths to `CHROMIUM_BIN`
+4. (optional) In `run-chrome.sh`, modify the paths to `CHROMIUM_BIN`
 5. Execute `run-chrome.sh`
 
 The latest git commit of AuntieTuna can also be installed manually by
@@ -133,11 +133,11 @@ following the "[Sideloading Instructions](#chromium--chromium-based-browsers-chr
 
 ## usage
 
-On a website you normally log in to, click on the shield icon and
+On a website you normally log in to, click on the AuntieTuna icon and
 "Add to Good List".
 
-The extension now checks, behind the scenes, if every visited webpage is
-phish or not. If it is, you'll be prevented from clicking through.
+The extension now checks, behind the scenes, if every webpage you visit is
+suspected to be phish. If it is, you'll receive an obvious alert.
 
 **NOTE**: Software is in ALPHA stage! There *might* be false positives
 and/or broken websites. Please send feedback to <calvin@isi.edu>.
@@ -168,7 +168,7 @@ any notes on your usage.
 
 ## copyright
 
-Copyright (C) 2016-2019  University of Southern California
+Copyright (C) 2016-2020  University of Southern California
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
