@@ -15,10 +15,12 @@ Bank of FooBar–if it does, it's likely phish and blocked.
 
 A peer-reviewed, research paper describing the details and usability of
 AuntieTuna can be found online:
-> Calvin Ardi and John Heidemann 2016. **AuntieTuna: Personalized
+> Calvin Ardi and John Heidemann. **AuntieTuna: Personalized
 > Content-Based Phishing Detection**. *Proceedings of the NDSS Workshop
 > on Usable Security* (San Diego, California, USA, Feb. 2016).
+> DOI: `10.14722/usec.2016.23012`.
 > ([BibTeX](https://ant.isi.edu/bib/Ardi16a.html),
+> [DOI](https://doi.org/10.14722/usec.2016.23012),
 > [PDF](https://www.isi.edu/%7ejohnh/PAPERS/Ardi16a.pdf))
 
 Additional information and a copy of this software and its source code
