@@ -65,8 +65,7 @@
   "web_accessible_resources": [
     "web_accessible_resources/hashes.paypal-2015-11-16.json"
    ,"web_accessible_resources/hashes.usc-2019-08-23.json"
-   ,"web_accessible_resources/hashes.nop.json"
-   ,"web_accessible_resources/hashes.ignore-me.txt"
+   ,"web_accessible_resources/hashes.usc_login-2020-02-29.json"
    ,"web_accessible_resources/hashes.eicar-test-1970-01-01.json"
   ]
 
