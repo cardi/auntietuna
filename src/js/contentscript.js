@@ -14,7 +14,7 @@ let storage = browser.storage.local,
 		runMode = -1,
     shouldCrawl = 0,
     shouldRun = -1,
-    DEBUG = false;
+    DEBUG = false,
     debug = DebugOptions.None;
 
 // set debug options
