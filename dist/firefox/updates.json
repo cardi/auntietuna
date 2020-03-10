@@ -3,9 +3,9 @@
   "auntietuna@ant.isi.edu": {
    "updates": [
     {
-     "version": "0.0.4.4",
-     "update_info_url": "https://github.com/cardi/auntietuna/releases/tag/v0.0.4.4",
-     "update_link": "https://github.com/cardi/auntietuna/releases/download/v0.0.4.4/auntietuna-0.0.4.4-an+fx.xpi"
+     "version": "0.0.4.5",
+     "update_info_url": "https://github.com/cardi/auntietuna/releases/tag/v0.0.4.5",
+     "update_link": "https://github.com/cardi/auntietuna/releases/download/v0.0.4.5/auntietuna-0.0.4.5-fx.xpi"
     }
    ]
   }
